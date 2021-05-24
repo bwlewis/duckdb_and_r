@@ -54,7 +54,7 @@ download.file("ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL
 download.file("https://github.com/bwlewis/duckdb_and_r/blob/master/genes.tsv?raw=true", destfile = "genes.tsv")
 ```
 
-## Parsing the data, or, pipelined parallelism is the best parallelism!
+## Data setup, or, pipelined parallelism is the best parallelism!
 
 The following code parses the input variant files into R data frames with
 position, reference allele, and alternate allele columns. It results in a list

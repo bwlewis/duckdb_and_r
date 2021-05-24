@@ -390,8 +390,8 @@ summary {
 download.file(&quot;ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL.chr8.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz&quot;, destfile = &quot;ALL.chr8.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz&quot;)
 download.file(&quot;https://github.com/bwlewis/duckdb_and_r/blob/master/genes.tsv?raw=true&quot;, destfile = &quot;genes.tsv&quot;)</code></pre>
 </div>
-<div id="parsing-the-data-or-pipelined-parallelism-is-the-best-parallelism" class="section level2">
-<h2>Parsing the data, or, pipelined parallelism is the best parallelism!</h2>
+<div id="data-setup-or-pipelined-parallelism-is-the-best-parallelism" class="section level2">
+<h2>Data setup, or, pipelined parallelism is the best parallelism!</h2>
 <p>The following code parses the input variant files into R data frames with position, reference allele, and alternate allele columns. It results in a list called <code>variants</code> with two data frames of variant coordinates and values, one for chromosome 7 and one for chromosome 8.</p>
 <pre class="r"><code>library(parallel)
 library(data.table)
