@@ -1,0 +1,99 @@
+# DuckDB and R: Five Easy Pieces
+
+DuckDB (https://duckdb.org) is a nifty new SQL database library, for use
+embedded in other programs, in the spirit of other embed-able databases like
+SQLite or the Berkeley DB key-value database. DuckDB has a particular focus on
+performance for interactive data analysis and superb integration with popular
+data analysis systems like Python and R.
+
+DuckDB's integration with R and Python is so complete that it can work directly
+on in-memory language objects without copying. This lets you use DuckDB
+directly on Pandas and R data frames, including excellent support for dplyr.
+
+These notes present 5 easy examples that illustrate database-like tasks in R
+that illustrate stylistic and performance across different R-centric and SQL
+approaches to representative problems.  The examples are short and range from
+basic data processing that SQL excels at to somewhat more complex, but common,
+specialized workflows from genomics and finance.
+ 
+
+## My unvarnished opinion
+
+DuckDB is a SQL engine with superb R integration. It exhibits reasonably fast
+joins and aggregations, typically among the most important features of a
+database system.
+
+Personally, I have, at best, mixed feelings about SQL. On the positive side
+lies the ability of good database engines to optimize arbitrary queries for
+performance.  And, SQL's declarative style can make many data wrangling
+intentions easy to express, at least for simple data manipulation tasks.
+
+But, many problems linger with SQL implementations. Query optimizers, it turns
+out, can only do so much.  Worse, there exists substantial syntax variation and
+idiosyncrasies across various SQL implementations.  For even slightly complex
+tasks (see the 'last item per group' example) SQL often becomes difficult to
+write and understand (for me, anyway).  I find the SQL declarative style
+awkward to compose and nest.  It can be  difficult to mix result types in a
+query (scalars and vectors, say).
+
+Paraphrasing Chamberlin (https://dl.acm.org/doi/10.1109/MAHC.2012.61), there is
+an impedance mismatch between the declarative SQL style and the more
+imperative/functional R style. And there are obvious downsides of representing
+SQL programs as big character strings in R--for instance, all errors can only
+be caught at run time.
+
+Fortunately, there is dplyr (https://dplyr.tidyverse.org/)! Dplyr calls itself
+a grammar of data manipulation, but it is also an impedance matching circuit
+that lets us write imperative, functional, composable R code and still gain the
+benefits of query optimization and performance that the database implementation
+has to offer.
+
+Finally, for problems that fit in your system's memory, I don't find any
+performance advantage of using DuckDB over alternative R approaches.  In
+particular data.table (https://github.com/Rdatatable/data.table) is usually
+(always?) faster than DuckDB for in-memory problems. Humble base R also often
+gets close to DuckDB performance. Plus, base R and data.table offer a
+substantial array of specialized data manipulation operations that easily
+exceed the performance and capabilities of DuckDB, as shown in some of the
+pieces.  However, DuckDB works without change on problems that are larger than
+the computer memory residing in files which can be an important advantage in
+some cases.
+
+For me, DuckDB is best used with R using dplyr, a really nice combination of
+technologies. In summary:
+
+* Use DuckDB for larger-than-RAM data manipulation.
+* Use DuckDB with dplyr, avoid SQL except for basic.
+
+But remember, this is just, like, my opinion, man.  I know that many folks are
+very comfortable with SQL, and I agree that for many data manipulation tasks
+SQL can be quite nice. For those tasks, DuckDB provides a reasonably
+high-performance and elegantly integrated solution.
+
+
+
+# The easy pieces
+
+* The TPCH join-aggregate example from DuckDB
+* An example from some recent work that picks last items in groups
+* Overlap joins on genomic data
+* Simple grouped aggregation on large out of core data
+* "As of" joins (common in finance, time series, etc.)
+
+
+# Notes of performance testing
+
+The examples are all fairly small and short, so take performance measurements
+with a grain of salt. Unless otherwise indicated, tests were performed on my
+cheapish ($700) Acer Swift 3 laptop with 8GB LPDDR4 3733 MT/s RAM, 8 physical
+AMD Ryzen 7 4700U 2GHz CPU cores with a 512GB Samsung NVME SSD drive running
+Devuan Beowulf (stable) GNU/Linux with a Linux 5.10 kernel.
+
+Benchmarking, especially on laptops, is very hard due to CPU frequency scaling
+for thermal management. For these tests I set the CPU frequency scaling
+governor to "performance" and also repeated each test many times to minimize
+that problem.  Despite a somewhat dim screen, that Acer gives great CPU
+performance value for the money!
+
+The examples use R version 4.0.2, DuckDB R package version 0.2.6, dplyr R
+package version 1.0.4, and the data.table R package version 1.14.0.
