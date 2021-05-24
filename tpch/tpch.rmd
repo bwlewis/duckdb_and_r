@@ -189,6 +189,18 @@ Stylistically, I prefer either the vectorized base R way or the dplyr approach.
 Dplyr has the advantage of easily generalizing to more complicated tasks and
 the ability to work as a front end to database (like DuckDB) and other systems.
 
+
+```{r, echo=TRUE, eval=FALSE}
+timings <- rbind(data.frame(approach = "DuckDB", elapsed = t1[3, ]),
+                 data.frame(approach = "Base R", elapsed = t2[3, ]),
+                 data.frame(approach = "dplyr", elapsed = t3[3, ]),
+                 data.frame(approach = "dplyr + DuckDB", elapsed = t4[3, ]),
+                 data.frame(approach = "data.table", elapsed = t5[3, ]))
+boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
+m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
+text(seq(NROW(m)), y = 1.2, labels = sprintf("%.2f", m$mean), cex = 1.5)
+```
+
 <img src="tpch_upshot.jpg"> </img>
 
 Performance-wise, it's a bit of a wash perhaps because this is a fairly trivial
