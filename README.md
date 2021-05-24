@@ -9,6 +9,6 @@ The easy pieces:
 
 * [TPCH join-aggregate example from DuckDB](https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html)
 * [Last item per group]()
-* [Genomic overlap joins]()
+* [Genomic overlap joins](https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html)
 * [Large out of core data]()
 * ["As of"-style joins]()
