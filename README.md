@@ -13,6 +13,6 @@ The easy pieces:
 * [Large out of core data]()
 * ["As of"-style joins]()
 
-A don't use SQL rant born out of frustration while compiling these notes appears here:
+A "don't use SQL" rant born out of frustration while compiling these notes appears here:
 
 [Declarative, Schmerative](https://bwlewis.github.io/duckdb_and_r/last/declarative.html)
