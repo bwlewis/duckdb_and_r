@@ -1,4 +1,4 @@
-# My thoughts and examples on DuckDB and R
+# My thoughts on DuckDB and R with examples
 
 This is work in progress as of May 2021, not all examples are complete and
 things are changing. I organize my thoughts into five easy pieces below.
@@ -8,7 +8,7 @@ things are changing. I organize my thoughts into five easy pieces below.
 The easy pieces:
 
 * [TPCH join-aggregate example from DuckDB](https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html)
-* [Last item per group]()
+* [Last item per group](https://bwlewis.github.io/duckdb_and_r/last/last.html)
 * [Genomic overlap joins](https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html)
 * [Large out of core data]()
 * ["As of"-style joins]()
