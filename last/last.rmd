@@ -60,14 +60,13 @@ t1 <- replicate(10, system.time({
 
 ## A base R vectorized way
 
-A natural R approach using indexing vectors. It's pretty fast.
+The natural base R approach using indexing vectors is pretty fast.
 ```{r, eval = FALSE}
 t2 <- replicate(10, system.time({
-  i <- order(example$company, example$date, method = "radix") # order by company, date
-  start <- c(1, diff(as.integer(example$company[i]))) != 0    # start of each company block
-  end   <- c(start[-1], TRUE)                                 # end of each company block
-  vec  <<- data.frame(company = example$company[i[end]],
-                      value   = example$value[i[end]])
+  i <- order(example$company, example$date, method = "radix", decreasing = TRUE) # reverse order by company, date
+  last <- c(1, diff(as.integer(example$company[i]))) != 0              # start of each company block (last value)
+  vec  <<- data.frame(company = example$company[i[last]],
+                      value   = example$value[i[last]])
 }))
 ```
 
@@ -167,8 +166,7 @@ mis-understanding of an R type is a bug? I'll report that to the authors.
 ## Performance and comments
 
 Personally, I find the dyplr approach to this task particularly elegant with
-plain old vectorized base R my second prefernce. But, that's just, like, my
-opinion.
+plain old vectorized base R my second choice.
 
 ```{r, eval = FALSE}
 timings <- rbind(data.frame(approach = "Base R aggregate", elapsed = t1[3, ]),

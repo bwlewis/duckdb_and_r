@@ -33,11 +33,10 @@ t1 <- replicate(10, system.time({
 
 # A vectorized way (faster than aggregate above)
 t2 <- replicate(10, system.time({
-  i <- order(example$company, example$date, method = "radix") # order by company, date
-  start <- c(1, diff(as.integer(example$company[i]))) != 0    # start of each company block
-  end   <- c(start[-1], TRUE)                                 # end of each company block
-  vec  <<- data.frame(company = example$company[i[end]],
-                      value   = example$value[i[end]])
+  i <- order(example$company, example$date, method = "radix", decreasing = TRUE) # reverse order by company, date
+  last <- c(1, diff(as.integer(example$company[i]))) != 0              # start of each company block (last value)
+  vec  <<- data.frame(company = example$company[i[last]],
+                      value   = example$value[i[last]])
 }))
 
 # One data table way, very fast but terse syntax
