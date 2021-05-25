@@ -18,7 +18,8 @@ most recent row by group.
 ## Data setup
 
 The following R code prepares a very simple example.  It uses the companion
-[fake.r](https://XXX) R data script to help generate a data frame of three
+[fake.r](https://raw.githubusercontent.com/bwlewis/duckdb_and_r/main/last/fake.r)
+R data script to help generate a data frame of three
 columns: date, company and value. The examples below simply return the most
 recent entries by company (group by "company", within group order by "date").
 

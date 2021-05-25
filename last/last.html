@@ -375,7 +375,7 @@ summary {
 <p>The result is a new data frame or table that subsets the original rows. In practice there might be millions of rows and thousands of groups (or more). It’s a simple task. A representative example we use below simply returns the most recent row by group.</p>
 <div id="data-setup" class="section level2">
 <h2>Data setup</h2>
-<p>The following R code prepares a very simple example. It uses the companion <a href="https://XXX">fake.r</a> R data script to help generate a data frame of three columns: date, company and value. The examples below simply return the most recent entries by company (group by “company”, within group order by “date”).</p>
+<p>The following R code prepares a very simple example. It uses the companion <a href="https://raw.githubusercontent.com/bwlewis/duckdb_and_r/main/last/fake.r">fake.r</a> R data script to help generate a data frame of three columns: date, company and value. The examples below simply return the most recent entries by company (group by “company”, within group order by “date”).</p>
 <pre class="r"><code>source(&quot;fake.r&quot;)
 set.seed(1)
 N_GROUPS &lt;- 100
