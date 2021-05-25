@@ -102,7 +102,8 @@ particular more than one alternate allele may be listed per line separated by
 commas (the remainder of the file is tab separated). R handles the extra format
 complexity with relative ease and efficiency. Parsing multiple alternate
 alleles adds only a dozen lines to the R program and runs very fast. Languages
-like R, Python, Perl, etc. excel at handling complex data formats like this.
+like R, Python, Perl, awk, etc. excel at handling complex data formats like
+this.
 
 I use shell utilities here to help uncompress and process the TSV files.  R's
 `pipe` connection object makes it easy to operate on pipelines of shell
