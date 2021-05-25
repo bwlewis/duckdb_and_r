@@ -37,7 +37,7 @@ above. The solution is composed of a few short and very declarative
 functions:
 
 ```{r, eval=FALSE}
-example %>% group_by(company) %>% summarize(value = last(value, order_by = date))
+example %>% group_by(company) %>% summarize(answer = last(value, order_by = date))
 ```
 Wow, you can almost put a period at the end and read it like a sentence.
 

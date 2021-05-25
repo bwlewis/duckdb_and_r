@@ -417,7 +417,7 @@ summary {
 <div id="the-dplyrtidy-data-way" class="section level2">
 <h2>The Dplyr/Tidy Data way</h2>
 <p>An R dplyr approach to performing the task hews closely to the simple statement above. The solution is composed of a few short and very declarative functions:</p>
-<pre class="r"><code>example %&gt;% group_by(company) %&gt;% summarize(value = last(value, order_by = date))</code></pre>
+<pre class="r"><code>example %&gt;% group_by(company) %&gt;% summarize(answer = last(value, order_by = date))</code></pre>
 <p>Wow, you can almost put a period at the end and read it like a sentence.</p>
 </div>
 <div id="low-level-imperative-pseudocode" class="section level2">
