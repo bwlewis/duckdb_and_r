@@ -70,8 +70,10 @@ end for
 
 ## SQL Oh My
 
-As far as I can tell, a standard SQL approach to solving this task looks remarkably
-like the latter, less efficient, pseudocode above:
+As far as I can tell, a standard SQL approach to solving this task looks
+remarkably like the latter, less efficient, pseudocode above except harder to
+read. The gist is number each row using date order within group and then go
+through and pick out rows with the right number:
 
 ```
 SELECT company, value FROM
@@ -84,7 +86,7 @@ What's worse, query optimizers for at least a few SQL database engines I tried
 quite literally interpret the SQL code and actually do loop over the data
 multiple times. See 
 https://bwlewis.github.io/duckdb_and_r/last/last.html
-for representative, and disasterously bad, SQL database engine timings.
+for representative, and disastrously bad, SQL database engine timings.
 
 Even worse yet, apparently some database engines ask the user themselves to work
 around inefficient implementations by using highly idiosyncratic tricks. See, for
@@ -93,26 +95,38 @@ instance illuminating discussions on this problem for PostgreSQL and MySQL:
 * https://hakibenita.com/sql-group-by-first-last-value
 * https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293
 
-Those discussions are painful to read through but darkly funny.
-
 
 ## Which approach looks more declarative to you?
 
-Yeah. Look, I get it. SQL can be really nice for simple, basic aggregation and
-filtering.  It's also really good at imposing constraints on data.  But hey, I
-used to work at a database company and I've seen SQL queries that would make
-Mike Stonebraker blush. SQL can be a mess, is very had to compose, and
-sometimes makes it difficult to express even seemingly simple objectives like
-the one above.
+Yeah.
+
+SQL can be really nice for simple, basic aggregation and filtering.  It's also
+really good at imposing constraints on data.  But hey, I used to work at a
+database company and I've seen SQL queries that would make Mike Stonebraker
+blush. SQL can be a mess, is very had to compose, and sometimes makes it
+difficult to express even seemingly simple objectives like the one above.
 
 My advice for most people is this: just use dplyr if you can. Don't use SQL.
-Think about your data munging problems the dplyr way.  For anything other than
-the most basic operations, dplyr is a better through-out grammar of data
-manipulation than SQL. Dplyr implements and extends ideas of Codd's relational
-algebra better than SQL does (hey, it's just, like, my opinion, man).  And
-besides, dplyr can be a front-end for your database and take advantage of
-available optimizations provided by the database.
+Try to think about your data munging problems the dplyr way.  For anything
+other than the most basic operations, I think dplyr is a better through-out
+grammar of data manipulation than SQL.  And besides, dplyr can usually front
+your database anyway.
 
 
+## Look, dplyr isn't perfect either
+
+Remember, nothing--not dplyr, SQL, certainly not R--is always a perfect
+solution to every problem. Indeed, dplyr seems to fail to figure out how to
+translate even this simple problem for back-end databases (probably because the
+SQL is so awful). The dplyr approach also brings with it considerable
+complexity for some operations, although that has been improving over the
+years. The fact is plain old base R often works really well in many cases,
+including for this problem. And even SQL, despite my misgivings about it, has
+many admirable qualities and tons of folks know it very well (surely way better
+than I do) and use it productively. Use the tools you feel comfortable with.
+
+See my notes here for more examples on this topic:
+
+https://bwlewis.github.io/duckdb_and_r
 
 <br/><br/>

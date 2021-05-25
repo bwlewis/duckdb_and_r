@@ -367,7 +367,7 @@ summary {
 
 <div id="duckdb-and-r-five-easy-pieces" class="section level1">
 <h1>DuckDB and R: Five Easy Pieces</h1>
-<p>DuckDB (<a href="https://duckdb.org" class="uri">https://duckdb.org</a>) is a nifty new SQL database library, for use embedded in other programs, in the spirit of other embed-able databases like SQLite or the Berkeley DB key-value database. DuckDB has a particular focus on performance for interactive data analysis and superb integration with popular data analysis systems like Python and R.</p>
+<p>DuckDB (<a href="https://duckdb.org" class="uri">https://duckdb.org</a>) is a nifty new SQL database library, for use embedded in other programs, in the spirit of other embed-able databases like SQLite or the Berkeley DB key-value database. Unlike SQLite, DuckDB uses a column-oriented data layout (like R data frames) and has a particular focus on performance for interactive data analysis and superb integration with popular data analysis systems like Python and R.</p>
 <p>DuckDB’s integration with R and Python is so complete that it can work directly on in-memory language objects without copying. This lets you use DuckDB directly on Pandas and R data frames, including excellent support for dplyr.</p>
 <p>These notes present 5 easy examples of database-like tasks in R that illustrate stylistic and performance across different R-centric and SQL approaches to representative problems. The examples are short and range from basic data processing that SQL excels at to somewhat more complex, but common, specialized workflows from genomics and finance.</p>
 </div>

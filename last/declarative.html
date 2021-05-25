@@ -378,32 +378,32 @@ summary {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2020-06-28</td>
+<td align="left">2020-06-29</td>
 <td align="left">Zaman Research &amp; Consulting Services</td>
 <td align="right">0.1512763</td>
 </tr>
 <tr class="even">
-<td align="left">2021-04-12</td>
+<td align="left">2021-04-13</td>
 <td align="left">Ackerman Health Care Equipment</td>
 <td align="right">0.7323856</td>
 </tr>
 <tr class="odd">
-<td align="left">2021-02-02</td>
+<td align="left">2021-02-03</td>
 <td align="left">Zaman Research &amp; Consulting Services</td>
 <td align="right">0.8713198</td>
 </tr>
 <tr class="even">
-<td align="left">2021-05-04</td>
+<td align="left">2021-05-05</td>
 <td align="left">Groves Marine</td>
 <td align="right">0.4544761</td>
 </tr>
 <tr class="odd">
-<td align="left">2021-04-10</td>
+<td align="left">2021-04-11</td>
 <td align="left">Xavier Wireless Telecommunication Services</td>
 <td align="right">0.5160909</td>
 </tr>
 <tr class="even">
-<td align="left">2020-06-15</td>
+<td align="left">2020-06-16</td>
 <td align="left">Bernard Mortgage REITs</td>
 <td align="right">0.6476043</td>
 </tr>
@@ -439,23 +439,29 @@ end for</code></pre>
 </div>
 <div id="sql-oh-my" class="section level2">
 <h2>SQL Oh My</h2>
-<p>As far as I can tell, a standard SQL approach to solving this task looks remarkably like the latter, less efficient, pseudocode above:</p>
+<p>As far as I can tell, a standard SQL approach to solving this task looks remarkably like the latter, less efficient, pseudocode above except harder to read. The gist is number each row using date order within group and then go through and pick out rows with the right number:</p>
 <pre><code>SELECT company, value FROM
   (SELECT company, date_numeric, value, ROW_NUMBER() OVER
     (PARTITION BY company ORDER BY date_numeric DESC) AS i FROM example) AS yikes
   WHERE i = 1</code></pre>
-<p>What’s worse, query optimizers for at least a few SQL database engines I tried quite literally interpret the SQL code and actually do loop over the data multiple times. See <a href="https://bwlewis.github.io/duckdb_and_r/last/last.html" class="uri">https://bwlewis.github.io/duckdb_and_r/last/last.html</a> for representative, and disasterously bad, SQL database engine timings.</p>
+<p>What’s worse, query optimizers for at least a few SQL database engines I tried quite literally interpret the SQL code and actually do loop over the data multiple times. See <a href="https://bwlewis.github.io/duckdb_and_r/last/last.html" class="uri">https://bwlewis.github.io/duckdb_and_r/last/last.html</a> for representative, and disastrously bad, SQL database engine timings.</p>
 <p>Even worse yet, apparently some database engines ask the user themselves to work around inefficient implementations by using highly idiosyncratic tricks. See, for instance illuminating discussions on this problem for PostgreSQL and MySQL:</p>
 <ul>
 <li><a href="https://hakibenita.com/sql-group-by-first-last-value" class="uri">https://hakibenita.com/sql-group-by-first-last-value</a></li>
 <li><a href="https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293" class="uri">https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293</a></li>
 </ul>
-<p>Those discussions are painful to read through but darkly funny.</p>
 </div>
 <div id="which-approach-looks-more-declarative-to-you" class="section level2">
 <h2>Which approach looks more declarative to you?</h2>
-<p>Yeah. Look, I get it. SQL can be really nice for simple, basic aggregation and filtering. It’s also really good at imposing constraints on data. But hey, I used to work at a database company and I’ve seen SQL queries that would make Mike Stonebraker blush. SQL can be a mess, is very had to compose, and sometimes makes it difficult to express even seemingly simple objectives like the one above.</p>
-<p>My advice for most people is this: just use dplyr if you can. Don’t use SQL. Think about your data munging problems the dplyr way. For anything other than the most basic operations, dplyr is a better through-out grammar of data manipulation than SQL. Dplyr implements and extends ideas of Codd’s relational algebra better than SQL does (hey, it’s just, like, my opinion, man). And besides, dplyr can be a front-end for your database and take advantage of available optimizations provided by the database.</p>
+<p>Yeah.</p>
+<p>SQL can be really nice for simple, basic aggregation and filtering. It’s also really good at imposing constraints on data. But hey, I used to work at a database company and I’ve seen SQL queries that would make Mike Stonebraker blush. SQL can be a mess, is very had to compose, and sometimes makes it difficult to express even seemingly simple objectives like the one above.</p>
+<p>My advice for most people is this: just use dplyr if you can. Don’t use SQL. Try to think about your data munging problems the dplyr way. For anything other than the most basic operations, I think dplyr is a better through-out grammar of data manipulation than SQL. And besides, dplyr can usually front your database anyway.</p>
+</div>
+<div id="look-dplyr-isnt-perfect-either" class="section level2">
+<h2>Look, dplyr isn’t perfect either</h2>
+<p>Remember, nothing–not dplyr, SQL, certainly not R–is always a perfect solution to every problem. Indeed, dplyr seems to fail to figure out how to translate even this simple problem for back-end databases (probably because the SQL is so awful). The dplyr approach also brings with it considerable complexity for some operations, although that has been improving over the years. The fact is plain old base R often works really well in many cases, including for this problem. And even SQL, despite my misgivings about it, has many admirable qualities and tons of folks know it very well (surely way better than I do) and use it productively. Use the tools you feel comfortable with.</p>
+<p>See my notes here for more examples on this topic:</p>
+<p><a href="https://bwlewis.github.io/duckdb_and_r" class="uri">https://bwlewis.github.io/duckdb_and_r</a></p>
 <p><br /><br /></p>
 </div>
 </div>
