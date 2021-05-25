@@ -116,13 +116,13 @@ usually front your database anyway.
 ## Look, dplyr isn't perfect either
 
 Remember, nothing--not dplyr, SQL, certainly not R--is always a perfect
-solution to every problem. Indeed, dplyr seems to fail to figure out how to
-translate even this simple problem for back-end databases.  The dplyr approach
-also brings with it considerable complexity for some tasks.  And, don't forget
-that plain old base R often works *really* well in many cases, including for
-this problem. Even SQL, despite my misgivings about it, has many admirable
-qualities and the advantage that tons of folks already know it very well
-(surely way better than I do) and use it productively.
+solution to every problem. Indeed, dplyr fails to figure out how to translate
+even this simple problem for back-end databases.  The dplyr approach also
+brings with it considerable complexity for some tasks.  And, don't forget that
+plain old base R often works *really* well in many cases, including for this
+problem. Even SQL, despite my misgivings about it, has many admirable qualities
+and the advantage that tons of folks already know it very well (surely way
+better than I do) and use it productively.
 
 For more thoughts and examples along these lines, see my notes on this topic
 here:
