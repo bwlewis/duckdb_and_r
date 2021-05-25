@@ -122,7 +122,7 @@ Maybe the query is wrong? Let's see...
 
 ## SQL/RSQLite  try 2
 
-Let's try that last SQL query on the SQLite database to see if it works.
+Let's try that last SQL query using SQLite database engine to see if it works.
 ```{r, eval = FALSE}
 library(RSQLite)
 lite <- dbConnect(RSQLite::SQLite(), ":memory:")

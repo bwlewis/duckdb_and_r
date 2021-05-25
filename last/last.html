@@ -455,7 +455,7 @@ AS yikes WHERE row = 1&quot;)</code></pre>
 </div>
 <div id="sqlrsqlite-try-2" class="section level2">
 <h2>SQL/RSQLite try 2</h2>
-<p>Let’s try that last SQL query on the SQLite database to see if it works.</p>
+<p>Let’s try that last SQL query using SQLite database engine to see if it works.</p>
 <pre class="r"><code>library(RSQLite)
 lite &lt;- dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
 dbWriteTable(lite, &quot;example&quot;, example)
