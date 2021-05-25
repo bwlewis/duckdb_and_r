@@ -1,0 +1,116 @@
+# Declarative, Schmerative!
+
+SQL is billed as a language of declarative data manipulation and analysis. But even
+for some simple tasks, SQL feels more imperative to me than alternatives like R.
+Consider the following quite simple example using a large table that starts out
+like:
+
+```{r, echo = FALSE}
+source("fake.r")
+
+set.seed(1)
+N_GROUPS <- 10
+MAX_LEN <- 1e3
+make_believe <- list(lengths = sample(MAX_LEN, N_GROUPS, replace = TRUE),
+                     values = paste(sample(names, N_GROUPS, replace = TRUE),
+                                    sample(sectors, N_GROUPS, replace = TRUE)))
+make_believe <- inverse.rle(structure(make_believe, class = "rle"))
+N <- length(make_believe)
+example <- data.frame(date = Sys.Date() - sample(365, N, replace = TRUE),
+                      company =  sample(make_believe), value = runif(N), stringsAsFactors = TRUE)
+knitr::kable(head(example, 6))
+```
+with many more, maybe millions more rows, like that. You can see a much
+longer discussion of this example here:
+https://bwlewis.github.io/duckdb_and_r/last/last.html .
+The task is very simply stated:
+
+> For each company in the example table, return the most recent value.
+
+How simple is that?
+
+
+## The Dplyr/Tidy Data way
+
+An R dplyr approach to performing the task hews closely to the simple statement
+above. The solution is composed of a few short and very declarative
+functions:
+
+```{r, eval=FALSE}
+example %>% group_by(company) %>% summarize(value = last(value, order_by = date))
+```
+Wow, you can almost put a period at the end and read it like a sentence.
+
+
+## Low-level imperative pseudocode
+
+Now let's imagine we are working with a very low-level imperative programming
+language. One approach might go something like:
+
+```
+groups = unique(company)
+for each group g
+  let i = integer index that reverse orders date in group g
+  keep row associated with i = 1
+end for
+```
+
+Or, if you felt like being less efficient about things you could make several
+passes over the data like so:
+
+```
+groups = unique(company)
+for each group g
+  let i = integer index that reverse orders date in group g
+end for
+for each row in example table
+  if i = 1 then keep row
+end for
+```
+
+## SQL Oh My
+
+As far as I can tell, a standard SQL approach to solving this task looks remarkably
+like the latter, less efficient, pseudocode above:
+
+```
+SELECT company, value FROM
+  (SELECT company, date_numeric, value, ROW_NUMBER() OVER
+    (PARTITION BY company ORDER BY date_numeric DESC) AS i FROM example) AS yikes
+  WHERE i = 1
+```
+
+What's worse, query optimizers for at least a few SQL database engines I tried
+quite literally interpret the SQL code and actually do loop over the data
+multiple times. See 
+https://bwlewis.github.io/duckdb_and_r/last/last.html
+for representative, and disasterously bad, SQL database engine timings.
+
+Even worse yet, apparently some database engines ask the user themselves to work
+around inefficient implementations by using highly idiosyncratic tricks. See, for
+instance illuminating discussions on this problem for PostgreSQL and MySQL:
+
+* https://hakibenita.com/sql-group-by-first-last-value
+* https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293
+
+Those discussions are painful to read through but darkly funny.
+
+
+## Which approach looks more declarative to you?
+
+Yeah. Look, I get it. SQL can be really nice for simple, basic aggregation and
+filtering.  It's also really good at imposing constraints on data.  But hey, I
+used to work at a database company and I've seen SQL queries that would make
+Mike Stonebraker blush.
+
+My advice for most people is this: just use dplyr if you can. Don't use SQL.
+Think about your data munging problems the dplyr way.  For anything other than
+the most basic operations, dplyr is a better through-out grammar of data
+manipulation than SQL. Dplyr implements and extends ideas of Codd's relational
+algebra better than SQL does (hey, it's just, like, my opinion, man).  And
+besides, dplyr can be a front-end for your database and take advantage of
+available optimizations provided by the database.
+
+
+
+<br/><br/>
