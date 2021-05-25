@@ -135,7 +135,7 @@ https://bwlewis.github.io/duckdb_and_r
 Some, but not all, SQL database systems require that I label (alias) the
 sub-query for reasons unknown to me. I'm not sure what the SQL ISO/IEC
 9075-2:2016 standard says about this, and I don't really want to pay $250 to
-find out.  For me, it's just another example of wide variation in SQL
-implementations across database systems.
+find out.  For me, it's just an example of variation in SQL implementations
+across database systems.
 
 <br/><br/>
