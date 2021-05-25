@@ -369,9 +369,19 @@ summary {
 <h1>DuckDB and R: Five Easy Pieces</h1>
 <p>DuckDB (<a href="https://duckdb.org" class="uri">https://duckdb.org</a>) is a nifty new SQL database library, for use embedded in other programs, in the spirit of other embed-able databases like SQLite or the Berkeley DB key-value database. DuckDB has a particular focus on performance for interactive data analysis and superb integration with popular data analysis systems like Python and R.</p>
 <p>DuckDB’s integration with R and Python is so complete that it can work directly on in-memory language objects without copying. This lets you use DuckDB directly on Pandas and R data frames, including excellent support for dplyr.</p>
-<p>These notes present 5 easy examples that illustrate database-like tasks in R that illustrate stylistic and performance across different R-centric and SQL approaches to representative problems. The examples are short and range from basic data processing that SQL excels at to somewhat more complex, but common, specialized workflows from genomics and finance.</p>
-<div id="my-unvarnished-opinion" class="section level2">
-<h2>My unvarnished opinion</h2>
+<p>These notes present 5 easy examples of database-like tasks in R that illustrate stylistic and performance across different R-centric and SQL approaches to representative problems. The examples are short and range from basic data processing that SQL excels at to somewhat more complex, but common, specialized workflows from genomics and finance.</p>
+</div>
+<div id="the-easy-pieces" class="section level1">
+<h1>The easy pieces</h1>
+<ul>
+<li><a href="https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html">TPCH join-aggregate example from DuckDB</a></li>
+<li><a href="https://bwlewis.github.io/duckdb_and_r/last/last.html">Last item per group</a></li>
+<li><a href="https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html">Genomic overlap joins</a></li>
+<li><a href>Large out of core data</a></li>
+<li><a href>“As of”-style joins</a></li>
+</ul>
+<div id="my-opinion" class="section level2">
+<h2><em>My</em> opinion</h2>
 <p>DuckDB is a SQL engine with superb R integration. It exhibits reasonably fast joins and aggregations, typically among the most important features of a database system.</p>
 <p>Personally, I have, at best, mixed feelings about SQL. On the positive side lies the ability of good database engines to optimize arbitrary queries for performance. And, SQL’s declarative style can make many data wrangling intentions easy to express, at least for simple data manipulation tasks.</p>
 <p>But, many problems linger with SQL implementations. Query optimizers, it turns out, can only do so much. Worse, there exists substantial syntax variation and idiosyncrasies across various SQL implementations. For even slightly complex tasks (see the ‘last item per group’ example) SQL often becomes difficult to write and understand (for me, anyway). I find the SQL declarative style awkward to compose and nest. It can be difficult to mix result types in a query (scalars and vectors, say).</p>
@@ -381,20 +391,10 @@ summary {
 <p>For me, DuckDB is best used with R using dplyr, a really nice combination of technologies. In summary:</p>
 <ul>
 <li>Use DuckDB for larger-than-RAM data manipulation.</li>
-<li>Use DuckDB with dplyr, avoid SQL except for basic.</li>
+<li>Use DuckDB with dplyr, avoid SQL except for basic stuff.</li>
 </ul>
 <p>But remember, this is just, like, my opinion, man. I know that many folks are very comfortable with SQL, and I agree that for many data manipulation tasks SQL can be quite nice. For those tasks, DuckDB provides a reasonably high-performance and elegantly integrated solution.</p>
 </div>
-</div>
-<div id="the-easy-pieces" class="section level1">
-<h1>The easy pieces</h1>
-<ul>
-<li>The TPCH join-aggregate example from DuckDB</li>
-<li>An example from some recent work that picks last items in groups</li>
-<li>Overlap joins on genomic data</li>
-<li>Simple grouped aggregation on large out of core data</li>
-<li>“As of” joins (common in finance, time series, etc.)</li>
-</ul>
 </div>
 <div id="notes-of-performance-testing" class="section level1">
 <h1>Notes of performance testing</h1>

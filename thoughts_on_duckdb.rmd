@@ -10,14 +10,23 @@ DuckDB's integration with R and Python is so complete that it can work directly
 on in-memory language objects without copying. This lets you use DuckDB
 directly on Pandas and R data frames, including excellent support for dplyr.
 
-These notes present 5 easy examples that illustrate database-like tasks in R
-that illustrate stylistic and performance across different R-centric and SQL
-approaches to representative problems.  The examples are short and range from
-basic data processing that SQL excels at to somewhat more complex, but common,
-specialized workflows from genomics and finance.
+These notes present 5 easy examples of database-like tasks in R that illustrate
+stylistic and performance across different R-centric and SQL approaches to
+representative problems.  The examples are short and range from basic data
+processing that SQL excels at to somewhat more complex, but common, specialized
+workflows from genomics and finance.
  
 
-## My unvarnished opinion
+# The easy pieces
+
+* [TPCH join-aggregate example from DuckDB](https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html)
+* [Last item per group](https://bwlewis.github.io/duckdb_and_r/last/last.html)
+* [Genomic overlap joins](https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html)
+* [Large out of core data]()
+* ["As of"-style joins]()
+
+
+## *My* opinion
 
 DuckDB is a SQL engine with superb R integration. It exhibits reasonably fast
 joins and aggregations, typically among the most important features of a
@@ -63,7 +72,7 @@ For me, DuckDB is best used with R using dplyr, a really nice combination of
 technologies. In summary:
 
 * Use DuckDB for larger-than-RAM data manipulation.
-* Use DuckDB with dplyr, avoid SQL except for basic.
+* Use DuckDB with dplyr, avoid SQL except for basic stuff.
 
 But remember, this is just, like, my opinion, man.  I know that many folks are
 very comfortable with SQL, and I agree that for many data manipulation tasks
@@ -71,14 +80,6 @@ SQL can be quite nice. For those tasks, DuckDB provides a reasonably
 high-performance and elegantly integrated solution.
 
 
-
-# The easy pieces
-
-* The TPCH join-aggregate example from DuckDB
-* An example from some recent work that picks last items in groups
-* Overlap joins on genomic data
-* Simple grouped aggregation on large out of core data
-* "As of" joins (common in finance, time series, etc.)
 
 
 # Notes of performance testing
