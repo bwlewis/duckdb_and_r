@@ -10,8 +10,8 @@ The easy pieces:
 * [TPCH join-aggregate example from DuckDB](https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html)
 * [Last item per group](https://bwlewis.github.io/duckdb_and_r/last/last.html)
 * [Genomic overlap joins](https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html)
-* [Large out of core data]()
-* ["As of"-style joins]()
+* Large out of core data
+* "As of"-style joins
 
 A "don't use SQL" rant born out of frustration while compiling these notes appears here:
 
