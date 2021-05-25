@@ -442,7 +442,7 @@ end for</code></pre>
 <p>As far as I can tell, a standard SQL approach to solving this task looks remarkably like the latter, less efficient, pseudocode above except harder to read. The gist is number each row using date order within group and then go through and pick out rows with the right number:</p>
 <pre><code>SELECT company, value FROM
   (SELECT company, date_numeric, value, ROW_NUMBER() OVER
-    (PARTITION BY company ORDER BY date_numeric DESC) AS i FROM example) AS yikes
+    (PARTITION BY company ORDER BY date_numeric DESC) AS i FROM example) AS cazart
   WHERE i = 1</code></pre>
 <p>What’s worse, query optimizers for at least a few SQL database engines I tried quite literally interpret the SQL code and actually loop over the data multiple times. See <a href="https://bwlewis.github.io/duckdb_and_r/last/last.html" class="uri">https://bwlewis.github.io/duckdb_and_r/last/last.html</a> for representative, and disastrously bad, SQL database engine timings.</p>
 <p>Even worse yet, apparently some database engines ask the user themselves to work around inefficient implementations by using highly idiosyncratic tricks. See, for instance illuminating discussions on this problem for PostgreSQL and MySQL:</p>
@@ -462,7 +462,11 @@ end for</code></pre>
 <p>Remember, nothing–not dplyr, SQL, certainly not R–is always a perfect solution to every problem. Indeed, dplyr fails to figure out how to translate even this simple problem for back-end databases. The dplyr approach also brings with it considerable complexity for some tasks. And, don’t forget that plain old base R often works <em>really</em> well in many cases, including for this problem. Even SQL, despite my misgivings about it, has many admirable qualities and the advantage that tons of folks already know it very well (surely way better than I do) and use it productively.</p>
 <p>For more thoughts and examples along these lines, see my notes on this topic here:</p>
 <p><a href="https://bwlewis.github.io/duckdb_and_r" class="uri">https://bwlewis.github.io/duckdb_and_r</a></p>
+<div id="appendix-whats-with-that-as-cazart-in-the-query" class="section level3">
+<h3>Appendix: What’s with that ‘AS cazart’ in the query?</h3>
+<p>Some, but not all, SQL database systems require that I label (alias) the sub-query for reasons unknown to me. I’m not sure what the SQL ISO/IEC 9075-2:2016 standard says about this, and I don’t really want to pay $250 to find out. For me, it’s just another example of wide variation in SQL implementations across database systems.</p>
 <p><br /><br /></p>
+</div>
 </div>
 </div>
 

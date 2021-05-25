@@ -213,3 +213,10 @@ Error: `last()` is only available in a windowed (`mutate()`) context
 I guess there exist few corner cases like this where dplyr can't yet generate
 appropriate back-end queries.
 
+
+### Appendix: What's with that 'AS yikes' in the query?
+
+DuckDB (but not SQLite) required that I label (alias) the sub-query for reasons
+unknown to me. I'm not sure what the SQL ISO/IEC 9075-2:2016 standard requires,
+and I don't really want to pay $250 to find out.  For me, it's just another
+example of wide variation in SQL implementations across database systems.

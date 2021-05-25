@@ -514,6 +514,10 @@ GROUP BY &quot;company&quot;</code></pre>
 <pre><code>Error: `last()` is only available in a windowed (`mutate()`) context</code></pre>
 <p>I guess there exist few corner cases like this where dplyr can’t yet generate appropriate back-end queries.</p>
 </div>
+<div id="appendix-whats-with-that-as-yikes-in-the-query" class="section level3">
+<h3>Appendix: What’s with that ‘AS yikes’ in the query?</h3>
+<p>DuckDB (but not SQLite) required that I label (alias) the sub-query for reasons unknown to me. I’m not sure what the SQL ISO/IEC 9075-2:2016 standard requires, and I don’t really want to pay $250 to find out. For me, it’s just another example of wide variation in SQL implementations across database systems.</p>
+</div>
 </div>
 </div>
 
