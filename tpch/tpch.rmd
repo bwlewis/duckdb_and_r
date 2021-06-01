@@ -98,12 +98,12 @@ vec[[1]]$sum - duck[[3]]
 ```
 
 That's because `l_extended_price` is represented by double-precision floating
-point values and R's `sum` function uses quad precision under the hood for
-accuracy--which also typically incurs a slight performance penalty. In this
-example, the R result is ever so slightly more accurate (you can see this, for
-instance, using the Rmpfr package). Also note that floating point results can
-vary depending on the order in which they are computed. R attempts to mitigate
-some floating point problems like this, at least for summation.
+point values and R's `sum` function uses (platform-specific) extended-precision
+precision double arithmetic under the hood for accuracy.  In this example, the
+R result is  slightly more accurate (you can see this, for instance, using the
+Rmpfr package). Also note that floating point results can vary depending on the
+order in which they are computed. R attempts to mitigate some floating point
+problems like this, at least for summation.
 
 
 ## Dplyr

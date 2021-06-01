@@ -422,7 +422,7 @@ lineitem[[&quot;l_shipdate&quot;]] &lt;- as.Date(lineitem[[&quot;l_shipdate&quot
 <pre class="r"><code>vec[[1]]$sum - duck[[3]] 
 
 #[1] 0.00289917</code></pre>
-<p>That’s because <code>l_extended_price</code> is represented by double-precision floating point values and R’s <code>sum</code> function uses quad precision under the hood for accuracy–which also typically incurs a slight performance penalty. In this example, the R result is ever so slightly more accurate (you can see this, for instance, using the Rmpfr package). Also note that floating point results can vary depending on the order in which they are computed. R attempts to mitigate some floating point problems like this, at least for summation.</p>
+<p>That’s because <code>l_extended_price</code> is represented by double-precision floating point values and R’s <code>sum</code> function uses (platform-specific) extended-precision precision double arithmetic under the hood for accuracy. In this example, the R result is slightly more accurate (you can see this, for instance, using the Rmpfr package). Also note that floating point results can vary depending on the order in which they are computed. R attempts to mitigate some floating point problems like this, at least for summation.</p>
 </div>
 <div id="dplyr" class="section level2">
 <h2>Dplyr</h2>
