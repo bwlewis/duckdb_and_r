@@ -103,8 +103,9 @@ Yeah.
 SQL can be really nice for simple, basic aggregation and filtering.  It's also
 really good at imposing constraints on data.  But hey, I used to work at a
 database company and I've seen SQL queries that would make Mike Stonebraker
-blush. SQL can be a mess, is very had to compose, and sometimes makes it
-difficult to express even seemingly simple objectives like the one above.
+smash his banjo like Pete Townshend. SQL can be a mess, is very had to compose,
+and sometimes makes it difficult to express even seemingly simple objectives
+like the one above.
 
 My advice for most people and most problems is this: just use dplyr if you can.
 Don't use SQL.  Try to think about your data munging problems the dplyr way.
