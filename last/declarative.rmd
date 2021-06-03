@@ -119,7 +119,14 @@ usually front your database anyway.
 Remember, nothing--not dplyr, SQL, certainly not R--is always a perfect
 solution to every problem. Indeed, dplyr fails to figure out how to translate
 even this simple problem for back-end databases.  The dplyr approach also
-brings with it considerable complexity for some tasks.  And, don't forget that
+brings with it considerable complexity for some tasks--just look at the large
+number of functions in the dplyr package:
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+length(ls("package:dplyr"))
+```
+That's a lot of stuff to remember.
+And, don't forget that
 plain old base R often works *really* well in many cases, including for this
 problem. Even SQL, despite my misgivings about it, has many admirable qualities
 and the advantage that tons of folks already know it very well (surely way

@@ -378,32 +378,32 @@ summary {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2020-07-06</td>
+<td align="left">2020-07-08</td>
 <td align="left">Zaman Research &amp; Consulting Services</td>
 <td align="right">0.1512763</td>
 </tr>
 <tr class="even">
-<td align="left">2021-04-20</td>
+<td align="left">2021-04-22</td>
 <td align="left">Ackerman Health Care Equipment</td>
 <td align="right">0.7323856</td>
 </tr>
 <tr class="odd">
-<td align="left">2021-02-10</td>
+<td align="left">2021-02-12</td>
 <td align="left">Zaman Research &amp; Consulting Services</td>
 <td align="right">0.8713198</td>
 </tr>
 <tr class="even">
-<td align="left">2021-05-12</td>
+<td align="left">2021-05-14</td>
 <td align="left">Groves Marine</td>
 <td align="right">0.4544761</td>
 </tr>
 <tr class="odd">
-<td align="left">2021-04-18</td>
+<td align="left">2021-04-20</td>
 <td align="left">Xavier Wireless Telecommunication Services</td>
 <td align="right">0.5160909</td>
 </tr>
 <tr class="even">
-<td align="left">2020-06-23</td>
+<td align="left">2020-06-25</td>
 <td align="left">Bernard Mortgage REITs</td>
 <td align="right">0.6476043</td>
 </tr>
@@ -459,7 +459,11 @@ end for</code></pre>
 </div>
 <div id="look-dplyr-isnt-perfect-either" class="section level2">
 <h2>Look, dplyr isn’t perfect either</h2>
-<p>Remember, nothing–not dplyr, SQL, certainly not R–is always a perfect solution to every problem. Indeed, dplyr fails to figure out how to translate even this simple problem for back-end databases. The dplyr approach also brings with it considerable complexity for some tasks. And, don’t forget that plain old base R often works <em>really</em> well in many cases, including for this problem. Even SQL, despite my misgivings about it, has many admirable qualities and the advantage that tons of folks already know it very well (surely way better than I do) and use it productively.</p>
+<p>Remember, nothing–not dplyr, SQL, certainly not R–is always a perfect solution to every problem. Indeed, dplyr fails to figure out how to translate even this simple problem for back-end databases. The dplyr approach also brings with it considerable complexity for some tasks–just look at the large number of functions in the dplyr package:</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
+length(ls(&quot;package:dplyr&quot;))</code></pre>
+<pre><code>## [1] 290</code></pre>
+<p>That’s a lot of stuff to remember. And, don’t forget that plain old base R often works <em>really</em> well in many cases, including for this problem. Even SQL, despite my misgivings about it, has many admirable qualities and the advantage that tons of folks already know it very well (surely way better than I do) and use it productively.</p>
 <p>For more thoughts and examples along these lines, see my notes on this topic here:</p>
 <p><a href="https://bwlewis.github.io/duckdb_and_r" class="uri">https://bwlewis.github.io/duckdb_and_r</a></p>
 <div id="appendix-whats-with-that-as-cazart-in-the-query" class="section level3">
