@@ -119,8 +119,8 @@ usually front your database anyway.
 Remember, nothing--not dplyr, SQL, certainly not R--is always a perfect
 solution to every problem. Indeed, dplyr fails to figure out how to translate
 even this simple problem for back-end databases.  The dplyr approach also
-brings with it considerable complexity for some tasks--just look at the large
-number of functions in the dplyr package:
+brings with it considerable complexity for some tasks--just look at the
+(ridiculously) large number of functions in the dplyr package:
 ```{r}
 suppressPackageStartupMessages(library(dplyr))
 length(ls("package:dplyr"))
