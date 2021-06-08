@@ -382,14 +382,14 @@ Vengeance">Analyzing 1.1 Billion NYC Taxi and Uber Trips, with a Vengeance</a>. 
 </div>
 <div id="mark-litwintschiks-query-4" class="section level2">
 <h2>Mark Litwintschik’s query 4</h2>
-<p><a href="https://tech.marksblogg.com/benchmarks.html">Mark Litwintschik</a> has done a remarkable job characterizing different approaches to basic data summaries using the NYC taxi data. The example here is based on Mark’s “query 4”, shown as a SQL query below:</p>
+<p><a href="https://tech.marksblogg.com/benchmarks.html">Mark Litwintschik</a> has done a remarkable job characterizing different approaches to basic data summaries using the NYC taxi data. The example here is based on Mark’s “query 4”, shown as an SQL query below:</p>
 <pre class="sql"><code>SELECT passenger_count,
   cast(trip_distance as int) AS distance,
   count(*) AS count
 FROM yellow
 GROUP BY passenger_count, distance
-ORDER BY count desc&quot;</code></pre>
-<p>The query is very simple. It defines <code>distance</code> to be the <em>integer part</em> of each trip distance, then groups by that and <code>passenger_count</code> (also an integer), counting the number of trips (rows) in each group. Mark’s query 4 differs in that it also groups by year, which are omitted here because this example uses only one year.</p>
+ORDER BY count desc</code></pre>
+<p>The query is very simple. It defines <code>distance</code> to be the <em>integer part</em> of each trip distance, then groups by that and <code>passenger_count</code> (also an integer), counting the number of trips (rows) in each group. Mark’s query 4 differs in that it also groups by year, omitted here because this example uses only one year.</p>
 </div>
 <div id="upshot" class="section level2">
 <h2>Upshot</h2>

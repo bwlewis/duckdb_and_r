@@ -53,7 +53,7 @@ All files total 146,112,989 data rows, not counting headers.
 <a href="https://tech.marksblogg.com/benchmarks.html">Mark Litwintschik</a> has
 done a remarkable job characterizing different approaches to basic data
 summaries using the NYC taxi data. The example here is based on Mark's "query 4",
-shown as a SQL query below:
+shown as an SQL query below:
 
 ```{sql, eval = FALSE}
 SELECT passenger_count,
@@ -61,13 +61,13 @@ SELECT passenger_count,
   count(*) AS count
 FROM yellow
 GROUP BY passenger_count, distance
-ORDER BY count desc"
+ORDER BY count desc
 ```
 
 The query is very simple. It defines `distance` to be the *integer part* of
 each trip distance, then groups by that and `passenger_count` (also an
 integer), counting the number of trips (rows) in each group.  Mark's query 4
-differs in that it also groups by year, which are omitted here because this example
+differs in that it also groups by year, omitted here because this example
 uses only one year.
 
 
