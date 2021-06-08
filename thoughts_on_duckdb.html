@@ -374,15 +374,15 @@ summary {
 <div id="the-easy-pieces" class="section level1">
 <h1>The easy pieces</h1>
 <ul>
+<li><a href="https://bwlewis.github.io/duckdb_and_r/taxi/taxi.html">Large out of core data</a></li>
 <li><a href="https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html">TPCH join-aggregate example from DuckDB</a></li>
 <li><a href="https://bwlewis.github.io/duckdb_and_r/last/last.html">Last item per group</a></li>
 <li><a href="https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html">Genomic overlap joins</a></li>
-<li>Large out of core data</li>
 <li>“As of”-style joins</li>
 </ul>
 <div id="my-opinion" class="section level2">
 <h2><em>My</em> opinion</h2>
-<p>DuckDB is a SQL engine with superb R integration. It exhibits reasonably fast joins and aggregations, typically among the most important features of a database system.</p>
+<p>DuckDB is a SQL engine with superb R integration. It exhibits reasonably fast joins and aggregations, typically among the most important features of a database system. It is simple to use, loads data robustly, and runs very fast on larger-than-RAM data (DuckDB’s sweet spot, IMO).</p>
 <p>Personally, I have, at best, mixed feelings about SQL. On the positive side lies the ability of good database engines to optimize arbitrary queries for performance. And, SQL’s declarative style can make many data wrangling intentions easy to express, at least for simple data manipulation tasks.</p>
 <p>But, many problems linger with SQL implementations. Query optimizers, it turns out, can only do so much. Worse, there exists substantial syntax variation and idiosyncrasies across various SQL implementations. For even slightly complex tasks (see the ‘last item per group’ example) SQL often becomes difficult to write and understand (for me, anyway). I find the SQL declarative style awkward to compose and nest. It can be difficult to mix result types in a query (scalars and vectors, say).</p>
 <p>Paraphrasing Chamberlin (<a href="https://dl.acm.org/doi/10.1109/MAHC.2012.61" class="uri">https://dl.acm.org/doi/10.1109/MAHC.2012.61</a>), there is an impedance mismatch between the declarative SQL style and the more imperative/functional R style. And there are obvious downsides of representing SQL programs as big character strings in R–for instance, all errors can only be caught at run time.</p>
