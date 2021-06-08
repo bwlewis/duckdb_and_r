@@ -84,7 +84,7 @@ high-performance and elegantly integrated solution.
 
 
 
-# Notes of performance testing
+# Notes on performance testing
 
 The examples are all fairly small and short, so take performance measurements
 with a grain of salt. Unless otherwise indicated, tests were performed on my

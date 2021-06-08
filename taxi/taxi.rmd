@@ -13,15 +13,15 @@ data inspired by Schneider's work.
 Because my laptop only has 8GB of RAM and a single 500GB solid state disk, the
 full example data--consisting of over 330GB of CSV files--is too big.
 Complicating things, the raw data formats inconsistently change over time,
-addressed partially by both Schneider and Litwintschik using complicated custom
-data munging processes. For example, old data include trip start and end
+addressed partially by both Schneider and Litwintschik using complicated, custom
+data munging procedures. For example, old data include trip start and end
 latitude and longitude data, but recent data only include a much coarser
 "LocationID" value.^[Note that there is at least one R package
 to import these data, https://github.com/beanumber/nyctaxi, but our simplified
 example does not need it.]
 
 Fortunately we can illustrate advantages of DuckDB on a much smaller example:
-all of the Yellow taxi cab data for 2015. Focussing on one year and one livery
+all of the yellow taxi cab data for 2015. Focussing on one year and one livery
 sidesteps the data format consistency issues and yields almost 23GB of raw CSV
 files (about 20GB of internal R data.frame storage if it could all be loaded in
 memory)--larger than my laptop's 8GB RAM.
@@ -67,7 +67,7 @@ ORDER BY count desc"
 The query is very simple. It defines `distance` to be the *integer part* of
 each trip distance, then groups by that and `passenger_count` (also an
 integer), counting the number of trips (rows) in each group.  Mark's query 4
-differs in that it also groups by year, which omitted here because this example
+differs in that it also groups by year, which are omitted here because this example
 uses only one year.
 
 
