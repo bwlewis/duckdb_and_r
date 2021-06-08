@@ -63,7 +63,7 @@ Finally, for problems that fit in your system's memory, I don't find any
 performance advantage of using DuckDB over alternative R approaches.  In
 particular data.table (https://github.com/Rdatatable/data.table) is usually
 (always?) faster than DuckDB for in-memory problems. Humble base R also often
-gets close to DuckDB performance. Plus, base R and data.table offer a
+gets close to or exceeds DuckDB performance. Plus, base R and data.table offer a
 substantial array of specialized data manipulation operations that easily
 exceed the performance and capabilities of DuckDB, as shown in some of the
 pieces.  However, DuckDB works without change on problems that are larger than
