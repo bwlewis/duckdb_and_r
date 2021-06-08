@@ -92,7 +92,7 @@ t2 <- replicate(50, system.time({
 One minor thing to notice, the computed results are slightly different from DuckDB's:
 
 ```{r, echo=TRUE, eval=FALSE}
-vec[[1]]$sum - duck[[3]] 
+vec[[1]][["sum"]] - duck[[3]] 
 
 #[1] 0.00289917
 ```
@@ -197,8 +197,8 @@ timings <- rbind(data.frame(approach = "DuckDB", elapsed = t1[3, ]),
                  data.frame(approach = "dplyr + DuckDB", elapsed = t4[3, ]),
                  data.frame(approach = "data.table", elapsed = t5[3, ]))
 boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
-m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
-text(seq(NROW(m)), y = 1.2, labels = sprintf("%.2f", m$mean), cex = 1.5)
+m = aggregate(list(mean=timings[["elapsed"]]), by=list(timings[["approach"]]), FUN=mean)
+text(seq(NROW(m)), y = 1.2, labels = sprintf("%.2f", m[["mean"]]), cex = 1.5)
 ```
 
 <img src="tpch_upshot.jpg"> </img>
