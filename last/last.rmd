@@ -35,7 +35,7 @@ make_believe <- inverse.rle(structure(make_believe, class = "rle"))
 N <- length(make_believe)
 example <- data.frame(date = Sys.Date() - sample(365, N, replace = TRUE),
                       company =  sample(make_believe), value = runif(N), stringsAsFactors = TRUE)
-example$date <- as.POSIXct(example$date) + runif(N)
+example[["date"]] <- as.POSIXct(example[["date"]]) + runif(N)
 ```
 Note that I've added a random fractional part to the dates to get a unique
 last date for each group. This uses a special R feature where the POSIXct
@@ -53,8 +53,8 @@ head(example, n = 10)
 This approach is really simple, but not particularly fast.
 ```{r, eval = FALSE}
 t1 <- replicate(10, system.time({
-  i <- order(example$company, example$date, method = "radix")
-  base <<- aggregate(example$value[i], by = list(company = example$company[i]), FUN = function(x) tail(x, 1))
+  i <- order(example[["company"]], example[["date"]], method = "radix")
+  base <<- aggregate(example[["value"]][i], by = list(company = example[["company"]][i]), FUN = function(x) tail(x, 1))
 }))
 ```
 
@@ -63,10 +63,10 @@ t1 <- replicate(10, system.time({
 The natural base R approach using indexing vectors is pretty fast.
 ```{r, eval = FALSE}
 t2 <- replicate(10, system.time({
-  i <- order(example$company, example$date, method = "radix", decreasing = TRUE) # reverse order by company, date
-  last <- c(1, diff(as.integer(example$company[i]))) != 0              # start of each company block (last value)
-  vec  <<- data.frame(company = example$company[i[last]],
-                      value   = example$value[i[last]])
+  i <- order(example[["company"]], example[["date"]], method = "radix", decreasing = TRUE) # reverse order by company, date
+  last <- c(1, diff(as.integer(example[["company"]][i]))) != 0              # start of each company block (last value)
+  vec  <<- data.frame(company = example[["company"]][i[last]],
+                      value   = example[["value"]][i[last]])
 }))
 ```
 
@@ -150,7 +150,7 @@ numbers:
 
 ```{r, eval=FALSE}
 duckdb_unregister(con, "example")
-example$date_numeric <- as.numeric(example$date)
+example[["date_numeric"]] <- as.numeric(example[["date"]])
 duckdb_register(con, "example", example)
 t5 <- replicate(10, system.time({
   duck <<- dbGetQuery(con, "SELECT company, value FROM (SELECT company, date, value, ROW_NUMBER() OVER (PARTITION BY company ORDER BY date DESC) AS row FROM example) AS yikes WHERE row = 1")
@@ -177,8 +177,8 @@ timings <- rbind(data.frame(approach = "Base R aggregate", elapsed = t1[3, ]),
                  data.frame(approach = "SQLite", elapsed = t6[3, ]))
 jpeg(file="last_upshot.jpg", quality=100, width=1000)
 boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
-m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
-text(seq(NROW(m)), y = 10, labels = sprintf("%.2f", m$mean), cex = 1.5)
+m = aggregate(list(mean = timings[["elapsed"]]), by=list(timings[["approach"]]), FUN=mean)
+text(seq(NROW(m)), y = 10, labels = sprintf("%.2f", m[["mean"]]), cex = 1.5)
 dev.off()
 ```
 <img src="last_upshot.jpg"></img>
