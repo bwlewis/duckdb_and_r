@@ -45,7 +45,7 @@ out, can only do so much.  Worse, there exists substantial syntax variation and
 idiosyncrasies across various SQL implementations.  For even slightly complex
 tasks (see the 'last item per group' example) SQL often becomes difficult to
 write and understand (for me, anyway).  I find SQL awkward to compose and nest.
-It is awkward (at best) to do things that should be really simple like mixing
+It is hard to do things that should be really simple like mixing
 result types in a query (scalars and vectors, say).  And there are obvious
 downsides of representing SQL programs as big character strings in R--for
 instance, all errors can only be caught at run time.
