@@ -36,8 +36,9 @@ fast on larger-than-RAM data (DuckDB's sweet spot, IMO).
 
 Personally, I have, at best, mixed feelings about SQL. On the positive side
 lies the ability of good database engines to optimize arbitrary queries for
-performance.  And, SQL's declarative style can make many data wrangling
-intentions easy to express, at least for simple data manipulation tasks.
+performance.  And, SQL's declarative style and relational model can indeed make
+many data wrangling intentions easy to express, at least for simple data
+manipulation tasks.
 
 But, many problems linger with SQL implementations. Query optimizers, it turns
 out, can only do so much.  Worse, there exists substantial syntax variation and
