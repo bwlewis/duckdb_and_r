@@ -43,19 +43,23 @@ But, many problems linger with SQL implementations. Query optimizers, it turns
 out, can only do so much.  Worse, there exists substantial syntax variation and
 idiosyncrasies across various SQL implementations.  For even slightly complex
 tasks (see the 'last item per group' example) SQL often becomes difficult to
-write and understand (for me, anyway).  I find the SQL declarative style
-awkward to compose and nest.  It can be  difficult to mix result types in a
-query (scalars and vectors, say).
+write and understand (for me, anyway).  I find SQL awkward to compose and nest.
+It is awkward (at best) to do things that should be really simple like mixing
+result types in a query (scalars and vectors, say).  And there are obvious
+downsides of representing SQL programs as big character strings in R--for
+instance, all errors can only be caught at run time.
 
-Paraphrasing Chamberlin (https://dl.acm.org/doi/10.1109/MAHC.2012.61), there is
-an impedance mismatch between the declarative SQL style and the more
-imperative/functional R style. And there are obvious downsides of representing
-SQL programs as big character strings in R--for instance, all errors can only
-be caught at run time.
+Chamberlin (https://dl.acm.org/doi/10.1109/MAHC.2012.61) memorably described an
+"impedance" mismatch between more imperative/procedural programming languages
+and the ostensibly more declarative SQL style. I am not entirely convinced by that,
+seeing that both SQL and R exhibit each style and both are either functional or
+more generally relational in spirit. See this amusing rant for
+an example of that:
+<a href="https://bwlewis.github.io/duckdb_and_r/last/declarative.html">Declarative, Schmerative!</a>.
 
-Fortunately, there is dplyr (https://dplyr.tidyverse.org/)! Dplyr calls itself
-a grammar of data manipulation, but it is also an impedance matching circuit
-that lets us write imperative, functional, composable R code and still gain the
+<b>Fortunately, there is dplyr (https://dplyr.tidyverse.org/)!</b> Dplyr calls
+itself a grammar of data manipulation, but it is also an impedance matching
+circuit that lets us write lovely composable R functions and still gain the
 benefits of query optimization and performance that the database implementation
 has to offer.
 
