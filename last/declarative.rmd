@@ -1,9 +1,9 @@
 # Declarative, Schmerative!
 
-SQL is billed as a language of declarative data manipulation and analysis. But even
-for some simple tasks, SQL feels more imperative to me than alternatives like R.
-Consider the following quite simple example using a large table that starts out
-like:
+SQL is billed as a language of declarative data manipulation and analysis.
+But even for some simple tasks, SQL really seems more imperative to me than
+alternatives like R.  Consider the following quite simple example using a large
+table that starts out like:
 
 ```{r, echo = FALSE}
 source("fake.r")
