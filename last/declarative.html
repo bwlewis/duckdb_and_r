@@ -378,32 +378,32 @@ summary {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2020-07-15</td>
+<td align="left">2020-07-16</td>
 <td align="left">Zaman Research &amp; Consulting Services</td>
 <td align="right">0.1512763</td>
 </tr>
 <tr class="even">
-<td align="left">2021-04-29</td>
+<td align="left">2021-04-30</td>
 <td align="left">Ackerman Health Care Equipment</td>
 <td align="right">0.7323856</td>
 </tr>
 <tr class="odd">
-<td align="left">2021-02-19</td>
+<td align="left">2021-02-20</td>
 <td align="left">Zaman Research &amp; Consulting Services</td>
 <td align="right">0.8713198</td>
 </tr>
 <tr class="even">
-<td align="left">2021-05-21</td>
+<td align="left">2021-05-22</td>
 <td align="left">Groves Marine</td>
 <td align="right">0.4544761</td>
 </tr>
 <tr class="odd">
-<td align="left">2021-04-27</td>
+<td align="left">2021-04-28</td>
 <td align="left">Xavier Wireless Telecommunication Services</td>
 <td align="right">0.5160909</td>
 </tr>
 <tr class="even">
-<td align="left">2020-07-02</td>
+<td align="left">2020-07-03</td>
 <td align="left">Bernard Mortgage REITs</td>
 <td align="right">0.6476043</td>
 </tr>
@@ -431,10 +431,10 @@ end for</code></pre>
 <p>Or, if you felt like being less efficient about things you could make several passes over the data like so:</p>
 <pre><code>groups = unique(company)
 for each group g
-  let i = integer index that reverse orders date in group g
+  let row.i = integer index that reverse orders date in group g
 end for
 for each row in example table
-  if i = 1 then keep row
+  if row.i = 1 then keep row
 end for</code></pre>
 </div>
 <div id="sql-oh-my" class="section level2">

@@ -61,10 +61,10 @@ passes over the data like so:
 ```
 groups = unique(company)
 for each group g
-  let i = integer index that reverse orders date in group g
+  let row.i = integer index that reverse orders date in group g
 end for
 for each row in example table
-  if i = 1 then keep row
+  if row.i = 1 then keep row
 end for
 ```
 

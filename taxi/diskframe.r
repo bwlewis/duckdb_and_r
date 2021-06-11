@@ -65,4 +65,4 @@ t2 <- replicate(10, system.time({
 mean(t2[3,])
 #[1] 44.9435
 
-
+# So, quite a bit slower and more problematic than most of the other methods.
