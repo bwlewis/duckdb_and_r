@@ -100,8 +100,8 @@ Devuan Beowulf (stable) GNU/Linux with a Linux 5.10 kernel.
 Benchmarking, especially on laptops, is very hard due to CPU frequency scaling
 for thermal management. For these tests I set the CPU frequency scaling
 governor to "performance" and also repeated each test many times to minimize
-that problem.  Despite a somewhat dim screen, that Acer gives great CPU
-performance value for the money!
+that problem.  By the way, despite a mediocre display, that Acer laptop gives
+*outstanding* CPU performance value!
 
 The examples use R version 4.0.2, DuckDB R package version 0.2.6, dplyr R
 package version 1.0.4, and the data.table R package version 1.14.0.
