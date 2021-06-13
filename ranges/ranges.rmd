@@ -41,7 +41,7 @@ https://www.pharmgkb.org/ [^5]. The example proceeds as follows:
 
 By genomic standards, this is a small problem. The raw data files consume about
 1.9 GB compressed, but the actual range data are pretty small: about 9 million
-variant coordinates and only about 2,100 gene ranges. As you can imaging, a lot
+variant coordinates and only about 2,100 gene ranges. As you can imagine, a lot
 of the work in this problem involves parsing the raw data to uncover those
 ranges.
 
