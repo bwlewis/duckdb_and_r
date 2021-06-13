@@ -2,7 +2,7 @@
 
 DuckDB (https://duckdb.org) is a nifty new SQL database library, for use
 embedded in other programs, in the spirit of other embed-able databases like
-SQLite or the Berkeley DB key-value database. Unlike SQLite, DuckDB uses a
+SQLite, Berkeley DB, and LMDB, among many others. Unlike SQLite, DuckDB uses a
 column-oriented data layout (like R data frames) and has a particular focus on
 performance for interactive data analysis and superb integration with popular
 data analysis systems like Python and R.
