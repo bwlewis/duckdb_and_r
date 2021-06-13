@@ -450,6 +450,7 @@ end for</code></pre>
 <li><a href="https://hakibenita.com/sql-group-by-first-last-value" class="uri">https://hakibenita.com/sql-group-by-first-last-value</a></li>
 <li><a href="https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293" class="uri">https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293</a></li>
 </ul>
+<p>I argue that SQL is simply a bad way to solve this kind of simple problem.</p>
 </div>
 <div id="which-approach-looks-more-declarative-to-you" class="section level2">
 <h2>Which approach looks more declarative to you?</h2>
@@ -458,7 +459,7 @@ end for</code></pre>
 <p>My advice for most people and most problems is this: just use dplyr if you can. Don’t use SQL. Try to think about your data munging problems the dplyr way. For anything other than the most basic operations, I think dplyr is a better through-out grammar of data manipulation than SQL. And besides, dplyr can usually front your database anyway.</p>
 </div>
 <div id="look-dplyr-isnt-perfect-either" class="section level2">
-<h2>Look, dplyr isn’t perfect either</h2>
+<h2>Look, dplyr isn’t perfect either (alas, nothing is)</h2>
 <p>Remember, nothing–not dplyr, SQL, certainly not R–is always a perfect solution to every problem. Indeed, dplyr fails to figure out how to translate even this simple problem for back-end databases. The dplyr approach also brings with it considerable complexity for some tasks–just look at the (ridiculously) large number of functions in the dplyr package:</p>
 <pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
 length(ls(&quot;package:dplyr&quot;))</code></pre>

@@ -95,6 +95,8 @@ instance illuminating discussions on this problem for PostgreSQL and MySQL:
 * https://hakibenita.com/sql-group-by-first-last-value
 * https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293
 
+I argue that SQL is simply a bad way to solve this kind of simple problem.
+
 
 ## Which approach looks more declarative to you?
 
@@ -114,7 +116,7 @@ through-out grammar of data manipulation than SQL.  And besides, dplyr can
 usually front your database anyway.
 
 
-## Look, dplyr isn't perfect either
+## Look, dplyr isn't perfect either (alas, nothing is)
 
 Remember, nothing--not dplyr, SQL, certainly not R--is always a perfect
 solution to every problem. Indeed, dplyr fails to figure out how to translate
