@@ -20,10 +20,10 @@ example <- data.frame(date = Sys.Date() - sample(365, N, replace = TRUE),
                       company =  sample(make_believe), value = runif(N), stringsAsFactors = TRUE)
 knitr::kable(head(example, 6))
 ```
-with many more, maybe millions more rows, like that. You can see a much
+with many more, maybe millions more, rows like that. You can see a much
 longer discussion of this example here:
 https://bwlewis.github.io/duckdb_and_r/last/last.html .
-The task is very simply stated:
+Consider the following very simple task:
 
 > For each company in the example table, return the most recent value.
 
