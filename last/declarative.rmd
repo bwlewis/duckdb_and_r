@@ -23,7 +23,7 @@ knitr::kable(head(example, 6))
 with many more, maybe millions more, rows like that. You can see a much
 longer discussion of this example here:
 https://bwlewis.github.io/duckdb_and_r/last/last.html .
-Consider the following very simple task:
+Here is a very easily stated task:
 
 > For each company in the example table, return the most recent value.
 
