@@ -392,16 +392,16 @@ example[[&quot;date&quot;]] &lt;- as.POSIXct(example[[&quot;date&quot;]]) + runi
 <p>The example data frame consists of 4,831,804 rows and looks like:</p>
 <pre class="r"><code>head(example, n = 10)</code></pre>
 <pre><code>##                   date                                     company     value
-## 1  2020-12-06 19:00:00               Pickett Highways &amp; Railtracks 0.6483873
-## 2  2021-04-12 20:00:00              Pettit Air Freight &amp; Logistics 0.6062633
-## 3  2021-03-20 20:00:00              Cooke Housewares &amp; Specialties 0.1737324
-## 4  2021-06-05 20:00:00             Hamm Construction &amp; Engineering 0.9667334
-## 5  2020-07-26 20:00:00              Pettit Air Freight &amp; Logistics 0.5968266
-## 6  2021-03-30 20:00:00                    Brandt Insurance Brokers 0.3114697
-## 7  2021-04-10 20:00:00 Newell Fertilizers &amp; Agricultural Chemicals 0.9727213
-## 8  2020-10-21 20:00:00             Holloway Auto Parts &amp; Equipment 0.7922035
-## 9  2020-08-15 20:00:00                         Brito Biotechnology 0.5040957
-## 10 2021-01-17 19:00:00                    Fritz Electric Utilities 0.2457931</code></pre>
+## 1  2020-12-17 19:00:00               Pickett Highways &amp; Railtracks 0.6483873
+## 2  2021-04-23 20:00:00              Pettit Air Freight &amp; Logistics 0.6062633
+## 3  2021-03-31 20:00:00              Cooke Housewares &amp; Specialties 0.1737324
+## 4  2021-06-16 20:00:00             Hamm Construction &amp; Engineering 0.9667334
+## 5  2020-08-06 20:00:00              Pettit Air Freight &amp; Logistics 0.5968266
+## 6  2021-04-10 20:00:00                    Brandt Insurance Brokers 0.3114697
+## 7  2021-04-21 20:00:00 Newell Fertilizers &amp; Agricultural Chemicals 0.9727213
+## 8  2020-11-01 19:00:00             Holloway Auto Parts &amp; Equipment 0.7922035
+## 9  2020-08-26 20:00:00                         Brito Biotechnology 0.5040957
+## 10 2021-01-28 19:00:00                    Fritz Electric Utilities 0.2457931</code></pre>
 </div>
 <div id="a-base-r-approach-using-aggregate" class="section level2">
 <h2>A base R approach using aggregate</h2>
@@ -517,6 +517,21 @@ GROUP BY &quot;company&quot;</code></pre>
 <div id="appendix-whats-with-that-as-yikes-in-the-query" class="section level3">
 <h3>Appendix: What’s with that ‘AS yikes’ in the query?</h3>
 <p>DuckDB (but not SQLite) required that I label (alias) the sub-query for reasons unknown to me. I’m not sure what the SQL ISO/IEC 9075-2:2016 standard requires, and I don’t really want to pay $250 to find out. For me, it’s just another example of wide variation in SQL implementations across database systems.</p>
+</div>
+<div id="postscript" class="section level3">
+<h3>Postscript</h3>
+<p>I learned about the SQL <code>LAST_VALUE</code> function and formulated this alternative SQL query in search of greater performance:</p>
+<pre><code>SELECT company, MAX(last_value) FROM
+  (SELECT company,
+  LAST_VALUE (value) OVER (
+    PARTITION BY company
+    ORDER BY date_numeric
+        RANGE BETWEEN UNBOUNDED PRECEDING AND 
+        UNBOUNDED FOLLOWING
+  ) last_value
+FROM example) as superfluous_required_alias
+GROUP BY company;</code></pre>
+<p>While still hard to read in my opinion, this query at least removes the somewhat weird row numbering scheme. But, alas, performance is about unchanged from the previous example query, on my system averaging about 16.5 seconds over 10 runs.</p>
 </div>
 </div>
 </div>

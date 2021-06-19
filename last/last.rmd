@@ -220,3 +220,27 @@ DuckDB (but not SQLite) required that I label (alias) the sub-query for reasons
 unknown to me. I'm not sure what the SQL ISO/IEC 9075-2:2016 standard requires,
 and I don't really want to pay $250 to find out.  For me, it's just another
 example of wide variation in SQL implementations across database systems.
+
+
+### Postscript
+
+I learned about the SQL `LAST_VALUE` function and formulated this alternative
+SQL query in search of greater performance:
+
+```
+SELECT company, MAX(last_value) FROM
+  (SELECT company,
+  LAST_VALUE (value) OVER (
+    PARTITION BY company
+    ORDER BY date_numeric
+        RANGE BETWEEN UNBOUNDED PRECEDING AND 
+        UNBOUNDED FOLLOWING
+  ) last_value
+FROM example) as superfluous_required_alias
+GROUP BY company;
+```
+
+While still hard to read in my opinion, this query at least removes the
+somewhat weird row numbering scheme. But, alas, performance is about unchanged
+from the previous example query, on my system averaging about 16.5 seconds over
+10 runs.
