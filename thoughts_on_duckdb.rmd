@@ -24,7 +24,7 @@ workflows from genomics and finance.
 * [TPCH join-aggregate example from DuckDB](https://bwlewis.github.io/duckdb_and_r/tpch/tpch.html)
 * [Last item per group](https://bwlewis.github.io/duckdb_and_r/last/last.html)
 * [Genomic overlap joins](https://bwlewis.github.io/duckdb_and_r/ranges/ranges.html)
-* "As of"-style joins
+* ["As of" joins](https://bwlewis.github.io/duckdb_and_r/asof/asof.html)
 
 
 ## *My* opinion
