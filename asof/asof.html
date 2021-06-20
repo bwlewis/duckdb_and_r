@@ -370,7 +370,7 @@ summary {
 <p>This piece describes a kind of table join common in time series problems (remote sensing, IOT, finance, telemetry logging, communications, etc.). It proceeds in two parts: first, a very simple example and some solutions to illustrate key ideas; then a larger example to illustrate performance.</p>
 <div id="part-1-the-basic-idea" class="section level2">
 <h2>Part 1: The basic idea</h2>
-<p>Given a table of desired dates, or times, or indeed any ordered values (call this table “calendar”), and a table of dates and data values (call this table “data”), the gist is to produce an output table with dates corresponding to the “calendar” table and values corresponding to the <em>most recently known</em> value from the “data” table.</p>
+<p>Given a table of desired dates, or times, or indeed any ordered values (call this table “calendar”), and a table of dates and data values (call this table “data”), the gist is to produce an output table with dates corresponding to the “calendar” table and values corresponding to the <em>most recently known</em> value from the “data” table. In other words, find the last known value as of each calendar date (thus the title).</p>
 <p>Consider the example “calendar” and “data” tables, along with the desired “as of” join output table shown below. Note, in particular, that not all dates in the “calendar” table are present in the “data” table.</p>
 <div style="display: flex; font-size: 0.75em;">
 <div style="flex: 8%;">
@@ -726,7 +726,7 @@ t.lite &lt;- replicate(6, system.time({
 <p>Alternative data models…</p>
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/sql/relational-databases/tables/use-sparse-columns?view=sql-server-ver15">Microsoft SQLServer sparse columns</a></li>
-<li><a href="https://paradigm4.com">SciDB</a></li>
+<li><a href="https://www.paradigm4.com">SciDB</a></li>
 <li><a href="https://tiledb.com/">TileDB</a></li>
 </ul>
 </div>

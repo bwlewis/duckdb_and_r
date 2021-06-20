@@ -9,9 +9,10 @@ to illustrate key ideas; then a larger example to illustrate performance.
 
 Given a table of desired dates, or times, or indeed any ordered values (call
 this table "calendar"), and a table of dates and data values (call this table
-"data"), the gist is to produce an output table with dates
-corresponding to the "calendar" table and values corresponding to the *most recently
-known* value from the "data" table.
+"data"), the gist is to produce an output table with dates corresponding to the
+"calendar" table and values corresponding to the *most recently known* value
+from the "data" table. In other words, find the last known value as of each
+calendar date (thus the title).
 
 Consider the example "calendar" and "data" tables, along with the desired "as
 of" join output table shown below.  Note, in particular, that not all dates in
