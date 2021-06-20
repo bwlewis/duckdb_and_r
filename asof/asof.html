@@ -484,7 +484,7 @@ summary {
 </div>
 <p>You can think about the “as of” join in different ways:</p>
 <ol style="list-style-type: decimal">
-<li>As a full outer join between the tables on date, followed by piece-wise constant interpolation of any missing values, followed by an inner join on date with the calendar table.</li>
+<li>As a full outer join between the tables on date, followed by piece-wise constant interpolation of any missing values, followed by an inner join on date with the “calendar” table.</li>
 <li>As a kind of inequality rolling join, where, for each “calendar” table date, join the value associated with the last “data” table date less than or equal to the “calendar” table date.</li>
 <li>Probably many other ways…</li>
 </ol>
