@@ -43,7 +43,8 @@ manipulation tasks.
 But, many problems linger with SQL implementations. Query optimizers, it turns
 out, can only do so much.  Worse, there exists substantial syntax variation and
 idiosyncrasies across various SQL implementations.  For even slightly complex
-tasks (see the 'last item per group' example) SQL often becomes difficult to
+tasks (see the [last item per group](https://bwlewis.github.io/duckdb_and_r/last/last.html)
+or [as of join](https://bwlewis.github.io/duckdb_and_r/asof/asof.html) examples!) SQL often becomes difficult to
 write and understand (for me, anyway).  I find SQL awkward to compose and nest.
 It is hard to do things that should be really simple like mixing
 result types in a query (scalars and vectors, say).  And there are obvious
