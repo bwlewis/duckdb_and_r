@@ -507,7 +507,7 @@ data &lt;- rbind(data,  cbind(calendar[2,,drop = FALSE], value = 0.5))
 data &lt;- data[order(data[[&quot;date&quot;]]),]</code></pre>
 <p>These data.frames look just like the example tables shown above. Now, a zoo approach. It uses zoo’s <code>na.locf</code> function, an acronym for “missing value, last observation carry-forward.”</p>
 <pre class="r"><code>library(zoo)
-(ans.zoo &lt;- merge(calendar, na.locf(merge(calendar, data, all=TRUE))))</code></pre>
+(ans.zoo &lt;- merge(calendar, na.locf(merge(calendar, data, all = TRUE)), all.x = TRUE))</code></pre>
 <pre><code>##         date     value
 ## 1 2020-01-01 0.6870228
 ## 2 2020-02-01 0.5000000
