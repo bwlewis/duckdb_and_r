@@ -151,8 +151,8 @@ involving idiosyncratic syntax specific to a particular (often commercial)
 database (for example Microsoft SQL Server, or Oracle databases, etc.).
 
 Giving up on the internet, I was at least able to cook up the following working
-vanilla SQL example. Be warned--it's icky--perhaps offensive, even--and I don't expect
-it to exhibit even reasonable performance but it does work!
+vanilla SQL example.
+<b>Reader, be advised: the following material may offend your sensibilities!</b>
 ```{r, echo = TRUE}
 library(duckdb)
 con <- dbConnect(duckdb())

@@ -551,7 +551,7 @@ ans.py</code></pre>
 <div id="sql" class="section level3">
 <h3>SQL</h3>
 <p>It took me a while to come up with a generic SQL approach (try it yourself!). Internet searches for phrases like “SQL as.of-style join,” “SQL last value fill in join,” and so on return many results of variable quality, most (all?) involving idiosyncratic syntax specific to a particular (often commercial) database (for example Microsoft SQL Server, or Oracle databases, etc.).</p>
-<p>Giving up on the internet, I was at least able to cook up the following working vanilla SQL example. Be warned–it’s icky–perhaps offensive, even–and I don’t expect it to exhibit even reasonable performance but it does work!</p>
+<p>Giving up on the internet, I was at least able to cook up the following working vanilla SQL example. <b>Reader, be advised: the following material may offend your sensibilities!</b></p>
 <pre class="r"><code>library(duckdb)
 con &lt;- dbConnect(duckdb())
 duckdb_register(con, &quot;data&quot;, data)
