@@ -106,7 +106,7 @@ approach. It uses zoo's `na.locf` function, an acronym for
 "missing value, last observation carry-forward."
 ```{r, echo = TRUE}
 library(zoo)
-(ans.zoo <- merge(calendar, na.locf(merge(calendar, data, all=TRUE))))
+(ans.zoo <- merge(calendar, na.locf(merge(calendar, data, all = TRUE)), all.x = TRUE))
 ```
 R's xts package can work in the same way as the zoo approach above, but
 much much faster. That will be illustrated in the performance section
