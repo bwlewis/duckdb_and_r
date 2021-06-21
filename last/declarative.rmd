@@ -105,7 +105,7 @@ Yeah.
 SQL can be really nice for simple, basic aggregation and filtering.  It's also
 really good at imposing constraints on data.  But hey, I used to work at a
 database company and I've seen SQL queries that would make Mike Stonebraker
-smash his banjo like Pete Townshend. SQL can be a mess, is very had to compose,
+smash his banjo like Pete Townshend. SQL can be a mess, is hard to compose,
 and sometimes makes it difficult to express even seemingly simple objectives
 like the one above.
 
