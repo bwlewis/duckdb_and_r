@@ -308,7 +308,7 @@ t.zoo <- replicate(6, system.time({
 ### Xts
 
 R's xts package defines a high-performance ordered index class that
-substantially extends the analogs in the zoo package. It has many convenient
+substantially expands on functions and ideas from the zoo package. It has many convenient
 functions and can solve this problem in more than one way. In particular,
 it can follow the same zoo approach used above (but runs *much* faster):
 

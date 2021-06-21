@@ -639,7 +639,7 @@ t.zoo &lt;- replicate(6, system.time({
 </div>
 <div id="xts" class="section level3">
 <h3>Xts</h3>
-<p>R’s xts package defines a high-performance ordered index class that substantially extends the analogs in the zoo package. It has many convenient functions and can solve this problem in more than one way. In particular, it can follow the same zoo approach used above (but runs <em>much</em> faster):</p>
+<p>R’s xts package defines a high-performance ordered index class that substantially expands on functions and ideas from the zoo package. It has many convenient functions and can solve this problem in more than one way. In particular, it can follow the same zoo approach used above (but runs <em>much</em> faster):</p>
 <pre class="r"><code>library(xts)
 calendar.xts &lt;- xts(, order.by = calendar[[&quot;date&quot;]])
 data.xts &lt;- xts(data[[&quot;value&quot;]], order.by = data[[&quot;date&quot;]])
