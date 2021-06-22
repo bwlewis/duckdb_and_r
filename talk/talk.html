@@ -1,0 +1,410 @@
+<!-- Browsers expect the following things to be loaded early near the top of the document -->
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">  <!-- favicon -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+
+<title>On DuckDB -- B. W. Lewis</title>
+<body style="margin: 80px; background-color: white;">
+
+<!-- BEGIN SLIDES -->
+
+<div class="slide">
+<br/><br/>
+<center>
+<font style="font-size: 1.4em;font-weight: 950;">On DuckDB and R</font>
+<br/><br/>
+<br/><br/>
+<br/><br/>
+<br/>
+Bryan W. Lewis for the Cleveland R User Group, June 2021
+</center>
+</div>
+
+
+<div class="slide">
+<br/>
+<b>Who is DuckDB?</b>
+<br/><br/>
+Mark Rassveldt and
+Hannes Mühleisen
+<br/>
+<font style="font-size:0.8em;">and 62 other committers so far...</font>
+<br/><br/>
+<a href="https://www.cwi.nl/"> https://www.cwi.nl/</a>
+<br/>
+<a href="https://duckdb.org/"> https://duckdb.org/</a>
+<br/>
+<br/>
+<a href="https://youtu.be/PFUZlNQIndo"> https://youtu.be/PFUZlNQIndo </a>
+<br/>
+(a nice talk by Mark on DuckDB)
+</div>
+
+<div class="slide">
+<br/>
+<b>What is DuckDB?</b>
+<br/>
+"SQLite for analytics"
+<br/><br/>
+<ul>
+<li> <b>Embedded</b> relational, SQL database library
+<ul>
+<li> Easy to install (<tt>install.packages("duckdb")</tt>)
+<li> Zero-config, data in memory or in single file DBs
+</ul>
+<li> <b>Column-oriented</b> tabular data model (unlike SQLite, like R!)
+<li> Very impressive <b>R and Python integration</b>
+</ul>
+</div>
+
+<div class="slide">
+<br/>
+<b>"Hello world" SQL trivial example</b>
+<br/>
+<xmp>
+library(duckdb)
+data("flights", package = "nycflights13")
+
+con <- dbConnect(duckdb())
+duckdb_register(con, "flights", flights)
+
+dbGetQuery(con, "SELECT origin, COUNT(*) AS n FROM flights GROUP BY origin")
+
+  origin      n
+1    EWR 120835
+2    LGA 104662
+3    JFK 111279
+
+</xmp>
+</div>
+
+
+<div class="slide">
+<br/>
+<b>OK, how about just a simple example then?</b>
+<br/><br/>
+<br/><br/>
+<font style="font-size: 0.9em;">
+Name the top 3 destinations for each origin airport. Easy!
+</font>
+</div>
+
+<div class="slide">
+<br/>
+<b>One base R way</b>
+<br/>
+<xmp>
+Map(function(x) head(names(sort(table(x), decreasing = TRUE)), n = 3),
+    split(flights[["dest"]], flights[["origin"]]))
+
+$EWR
+[1] "ORD" "BOS" "SFO"
+
+$JFK
+[1] "LAX" "SFO" "BOS"
+
+$LGA
+[1] "ATL" "ORD" "CLT"
+
+</xmp>
+</div>
+
+<div class="slide">
+<br/>
+<b>Dplyr</b>
+<br/>
+<xmp>
+library(dplyr)
+flights %>% group_by(origin) %>% count(dest, sort = TRUE) %>%
+  slice_head(n = 3) %>% select(origin, dest)
+
+  origin dest 
+1 EWR    ORD  
+2 EWR    BOS  
+3 EWR    SFO  
+4 JFK    LAX  
+5 JFK    SFO  
+6 JFK    BOS  
+7 LGA    ATL  
+8 LGA    ORD  
+9 LGA    CLT  
+
+</xmp>
+</div>
+
+
+<div class="slide">
+<br/>
+<b>SQL (and DuckDB)</b> <font style="margin-left: 500px;">(Yikes!)</font>
+<br/>
+<xmp>
+Q = "
+SELECT origin, dest
+FROM (SELECT origin, dest, n
+  FROM (SELECT origin, dest, n, RANK() OVER (PARTITION BY origin ORDER BY n DESC) AS h
+    FROM (SELECT origin, dest, COUNT(*) AS n
+      FROM flights
+      GROUP BY origin, dest
+    ) AS curly
+  ) AS moe
+  WHERE (h <= 3)
+) AS shemp ORDER BY origin;"
+
+
+dbGetQuery(con, Q)
+
+</xmp>
+</div>
+
+
+<div class="slide">
+<br/>
+<b>Fortunately, DuckDB works with dplyr!</b>
+<br/>
+<xmp>
+tbl(con, "flights") %>%
+  group_by(origin) %>%
+  count(dest, sort = TRUE) %>%
+  slice_max(order_by = n, n = 3) %>%
+  select(origin, dest)
+
+  origin dest 
+1 JFK    LAX  
+2 JFK    SFO  
+3 JFK    BOS  
+4 LGA    ATL  
+5 LGA    ORD  
+6 LGA    CLT  
+7 EWR    ORD  
+8 EWR    BOS  
+9 EWR    SFO  
+</xmp>
+</div>
+
+<div class="slide">
+<br/>
+<b style="font-size: 1.2em;">When and how is a tool like DuckDB really useful?</b>
+<br/><br/>
+<br/><br/>
+At least two facets to this, syntax and performance.
+</div>
+
+<div class="slide">
+<br/>
+<b>Syntax and comprehensibility advice</b>
+<br/><br/>
+SQL is good for simple data processing tasks.
+<br/>
+<br/>
+It can be awful or even unusable for many other tasks we use R for.
+<br/><br/>
+Start with base R or dplyr. Think about problems the dplyr way.
+<br/><br/>
+Dplyr works with your database anyway, so you'll have less to think about.
+</div>
+
+<div class="slide">
+<br/>
+<b>Another syntax example, "as of" join one liners</b>
+<br/>
+In R and Python...
+<xmp>
+data[calendar, on = "date", roll = TRUE]         # using R data.table
+
+pandas.merge_asof(calendar, data, on = "date")   # using Python Pandas
+
+merge(calendar, na.locf(merge(calendar, data)), join = "left")   # R xts
+
+</xmp>
+<br/>
+
+<div style="font-size: 0.8em;">
+See
+<a href="https://bwlewis.github.io/duckdb_and_r/asof/asof.html">https://bwlewis.github.io/duckdb_and_r/asof/asof.html</a>
+for full details.
+</div>
+</div>
+
+<div class="slide">
+<br/>
+<b>In SQL</b> <font style="margin-left: 200px">(not a one-liner!)</font>
+<br/>
+<xmp style="font-size: 0.4em;">WITH z AS (
+  SELECT date, (NULL) AS value FROM calendar
+  UNION
+  SELECT date, value FROM data
+  ORDER BY date
+),
+a AS (
+  SELECT date, value, ROW_NUMBER() OVER (
+    ORDER BY date
+    RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) * (CASE WHEN value IS NULL THEN 0 ELSE 1 END) AS i
+  FROM z
+),
+b AS (
+  SELECT date,  MAX(i) OVER (
+    ORDER BY date
+    RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS j
+  FROM a
+),
+c AS (
+  SELECT b.date, value FROM a, b
+  WHERE a.i > 0 AND a.i = b.j
+),
+d AS (
+  SELECT calendar.date, value FROM calendar, c
+  WHERE calendar.date = c.date
+  ORDER BY c.date
+)
+SELECT * FROM d UNION SELECT * FROM d ORDER BY date
+</xmp>
+<br/>
+</div>
+
+<div class="slide">
+<br/>
+<b>Performance of that "as of" join on my laptop</b>
+<br/>
+<img src="asof_upshot.jpg" width="85%"/>
+</div>
+
+<div class="slide">
+<br/>
+<b>Performance advice</b>
+<br/><br/>
+In many tests, R outperforms DuckDB for in-memory problems across the board (sometimes by huge margins).
+<br/><br/>
+DuckDB's advantage is that it can work without modification on larger-than-main-memory data.
+<br/><br/>
+Use things like DuckDB (or SQLite) when you expect problems that don't easily fit in RAM.
+And when you do, use them with dplyr!
+</div>
+
+
+<div class="slide">
+<br/>
+<b>Summary</b>
+<br/><br/>
+DuckDB makes using a database in R *really* easy.
+<br/><br/>
+DuckDB's key advantage is that it can work without modification on larger-than-main-memory data.
+<br/><br/>
+Use it with dplyr.
+
+<br/><br/>
+See this link for much more:
+<br/>
+<a href="https://bwlewis.github.io/duckdb_and_r/thoughts_on_duckdb.html">
+https://bwlewis.github.io/duckdb_and_r/thoughts_on_duckdb.html
+</a>
+</div>
+
+
+
+
+
+
+<!--END OF SLIDES-->
+
+<style>
+@font-face {
+  font-family: "osan";
+  src: url("/fonts/OpenSans-Regular-webfont.woff2") format("woff2"),
+       url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
+}
+li {
+  font-size: 0.9em;
+  margin-top: 14px;
+}
+.slide {
+  font-family: sans-serif;
+  font-size: 40pt;
+  font-weight: 400;
+  width: 100%;
+}
+xmp {
+  font-family: monospace;
+  font-size: 28pt;
+  background-color: #11a9cf31;
+}
+
+@media print {
+.slide { 
+    page-break-before: always;
+  }
+}
+@page { size: landscape; }
+</style>
+
+<div class="buttons" style="position:fixed; bottom: 20px;">
+  <button onclick="plusDivs(-1)">&#10094;</button>
+  <button onclick="plusDivs(1)">&#10095;</button>
+  <button onclick="printSlides()">print</button>
+</div>
+<div id="pagenumber" style="position:fixed; bottom: 20px; right: 20px;">1</div>
+
+<script>
+var slideIndex = 1;
+document.addEventListener("keydown", ki, false);
+
+function ki(e) {
+  var keyCode = e.keyCode;
+  if(keyCode==39) {
+    plusDivs(1);
+  }
+  if(keyCode==37) {
+    plusDivs(-1);
+  }
+  if(keyCode==80) {
+    printSlides();
+  }
+  if(keyCode==72) {
+    hideButtons();
+  }
+}
+showDivs(slideIndex);
+
+function hideButtons() {
+  var x = document.getElementsByClassName("buttons");
+  if(x[0].style.display == "none") x[0].style.display = "block"
+  else x[0].style.display = "none";
+}
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("slide");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex - 1].style.display = "block";  
+  var y = document.getElementById("pagenumber");
+  y.innerHTML = slideIndex + "/" + x.length;
+}
+
+function printSlides() {
+  var i;
+  var y = document.getElementById("pagenumber");
+  y.innerHTML = "";
+  var x = document.getElementsByClassName("slide");
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "block";  
+  }
+  window.print();
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex - 1].style.display = "block";  
+}
+</script>

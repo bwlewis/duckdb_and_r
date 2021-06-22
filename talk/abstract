@@ -1,0 +1,18 @@
+DuckDB (https://duckdb.org) is a new embedded SQL database library in the
+spirit of other embedded databases like SQLite. Unlike SQLite, DuckDB uses a
+column-oriented data layout (like R data frames) and has a particular focus on
+performance for interactive data analysis.  DuckDB's integration with R is so
+complete that it can work directly on in-memory language objects without
+copying. This lets you use DuckDB directly on R data frames, including
+excellent support for dplyr.
+
+I'll show some practical examples of R and DuckDB and share my thoughts how to
+best use these technologies together.
+
+
+---
+
+Bryan Lewis is a mathematician, author of the irlba and threejs R packages, and
+coauthor of the recent CRC textbook "A Computational Approach to Statistical
+Learning." He previously worked on Mike Stonebraker's open-source SciDB array
+database project.
