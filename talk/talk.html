@@ -291,26 +291,27 @@ tbl(con, "flights") %>%
 <b style="font-size: 1em;">When and how is a tool like DuckDB really useful?</b>
 <br/><br/>
 <br/><br/>
-At least two facets to this: syntax and performance.
+One way to think about this:
+<br/><br/>
+syntax (how), and
+<br/><br/>
+performance (when).
 </div>
 
 <div class="slide">
 <br/>
 <b>Syntax and comprehensibility advice</b>
+<br/><br/><br/>
+Data manipulation in R is easier than SQL.
 <br/><br/>
-SQL is for simple data processing tasks.
-<br/>
-<br/>
-It can be unusable for many other tasks we use R for.
+Start with R, add dplyr, data.table, etc. as needed.
 <br/><br/>
-Start with base R or dplyr. Think about problems the dplyr way.
-<br/><br/>
-Dplyr works with your database anyway, so one less language to deal with!
+With dplyr, R works with your database anyway, so one less language to deal with!
 </div>
 
 <div class="slide">
 <br/>
-<b>Another example: "as of" joins</b>
+<b>Another simple example: "as of" joins</b>
 <br/>
 <font style="font-size: 0.9em;">Basic idea:</font>
 
@@ -445,7 +446,8 @@ table tr td:first-child {
 
 <br/>
 <font style="font-size: 0.9em;">
-"For each 'calendar' date, find the most recent data value <i>as of</i> that date."
+For each 'calendar' date, find the most recent 'data' value
+<br/><span style="margin-right: 10px;"><i>as of</i></span> that date.
 </font>
 
 
@@ -454,16 +456,17 @@ table tr td:first-child {
 
 <div class="slide">
 <br/>
-<b>Expressed in R and Python:</b>
+<b>Many easy ways in R and Python...</b>
 <br/>
 <br/>
 <xmp>
-data[calendar, on = "date", roll = TRUE]         # using R data.table
+data[calendar, on = "date", roll = TRUE]           #  using R data.table
 
-pandas.merge_asof(calendar, data, on = "date")   # using Python Pandas
+pandas.merge_asof(calendar, data, on = "date")     # using Python Pandas
 
 merge(calendar, na.locf(merge(calendar, data)), join = "left")   # R xts
 
+(more...)
 </xmp>
 <br/>
 
@@ -479,7 +482,7 @@ for full details.
 <img style="width: 200px;" src="mad.webp"/>
 </div>
 <br/>
-<b>In SQL</b>
+<b>SQL</b>
 <br/>
 <xmp style="font-size: 0.4em;">WITH z AS (
   SELECT date, (NULL) AS value FROM calendar
@@ -534,7 +537,7 @@ R outperforms DuckDB for in-memory problems (sometimes by huge margins).
 <br/><br/>
 DuckDB's advantage is that queries can work without modification on larger-than-RAM data.
 <br/><br/>
-Use things like DuckDB (or SQLite, etc.) when you expect problems that don't easily fit in RAM.
+Use databases for problems that don't easily fit in RAM.
 And when you do, use them with dplyr!
 </div>
 
