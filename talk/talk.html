@@ -60,7 +60,7 @@ Hannes Mühleisen
 
 <div class="slide">
 <br/>
-<b>A trivial SQL example</b>
+<b>Easy SQL example to get started...</b>
 <br/>
 <xmp>
 library(duckdb)
@@ -83,14 +83,14 @@ dbGetQuery(con,
 
 <div class="slide">
 <br/>
-<b>From trivial to merely simple...</b>
+<b>From easy to merely simple...</b>
 <br/><br/>
 <br/><br/>
 <font style="font-size: 0.9em;">
 Name the top 3 destinations for each origin airport.
 <br/><br/>
 <br/><br/>
-Easy!
+OK, still easy!
 </font>
 </div>
 
@@ -157,8 +157,11 @@ select(origin, dest)
 
 
 <div class="slide">
+<div style="position: absolute; right: 5%;">
+<img style="width: 200px;" src="confused.webp"/>
+</div>
 <br/>
-<b>SQL (and DuckDB)</b> Yikes!
+<b>SQL (and DuckDB)</b>
 <br/>
 <div style="display: flex; font-size: 0.85em;">
 <div style="flex: 64%;">
@@ -271,14 +274,14 @@ At least two facets to this: syntax and performance.
 <br/>
 <b>Syntax and comprehensibility advice</b>
 <br/><br/>
-SQL is good for simple data processing tasks.
+SQL is for simple data processing tasks.
 <br/>
 <br/>
 It can be unusable for many other tasks we use R for.
 <br/><br/>
 Start with base R or dplyr. Think about problems the dplyr way.
 <br/><br/>
-Dplyr works with your database anyway, so one less language to think about!
+Dplyr works with your database anyway, so one less language to deal with!
 </div>
 
 <div class="slide">
@@ -448,8 +451,8 @@ for full details.
 </div>
 
 <div class="slide">
-<div style="position: absolute; left: 60%;">
-<img src="swear.webp"/>
+<div style="position: absolute; right: 5%;">
+<img style="width: 200px;" src="mad.webp"/>
 </div>
 <br/>
 <b>In SQL</b>
@@ -505,10 +508,25 @@ It's a small example: about 5 million data rows, 250K calendar rows!
 <br/><br/>
 R outperforms DuckDB for in-memory problems (sometimes by huge margins).
 <br/><br/>
-DuckDB's advantage is that it can work without modification on larger-than-main-memory data.
+DuckDB's advantage is that it can work well without modification on larger-than-RAM data.
 <br/><br/>
 Use things like DuckDB (or SQLite, etc.) when you expect problems that don't easily fit in RAM.
 And when you do, use them with dplyr!
+</div>
+
+<div class="slide">
+<br/>
+<b>Except...</b>
+<br/><br/>
+Larger-than-memory <i>one off</i> problems may run fastest with Jim Hester's
+<b>vroom</b> package.
+<br/><br/>
+See this link for an example using the NYC taxi data:
+<br/>
+<a href="https://bwlewis.github.io/duckdb_and_r/taxi/taxi.html">https://bwlewis.github.io/duckdb_and_r/taxi/taxi.html</a>
+<br/><br/>
+<br/><br/>
+<font style="font-size: 0.8em">As Don Quixote said, "it takes all kinds of tools to solve data science problems."
 </div>
 
 
@@ -518,7 +536,7 @@ And when you do, use them with dplyr!
 <br/><br/>
 DuckDB makes using a database in R *really* easy.
 <br/><br/>
-DuckDB's key advantage is that it can work without modification on larger-than-main-memory data.
+DuckDB's key advantage is that queries work well without modification on larger-than-main-memory data.
 <br/><br/>
 Use it with dplyr.
 
