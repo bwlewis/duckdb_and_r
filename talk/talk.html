@@ -80,6 +80,30 @@ dbGetQuery(con,
 </xmp>
 </div>
 
+<div class="slide">
+<br/>
+<b>Easy SQL example to get started...</b>
+<br/>
+<pre>
+
+library(duckdb)
+data("flights", package = "nycflights13")
+
+con <- dbConnect(duckdb())
+<b class='highlight'>duckdb_register(con, "flights", flights)</b>
+
+dbGetQuery(con,
+  "SELECT origin, COUNT(*) AS n FROM flights GROUP BY origin")
+
+  origin      n
+1    EWR 120835
+2    LGA 104662
+3    JFK 111279
+
+</pre>
+</div>
+
+
 
 <div class="slide">
 <br/>
@@ -508,7 +532,7 @@ It's a small example: about 5 million data rows, 250K calendar rows!
 <br/><br/>
 R outperforms DuckDB for in-memory problems (sometimes by huge margins).
 <br/><br/>
-DuckDB's advantage is that it can work well without modification on larger-than-RAM data.
+DuckDB's advantage is that queries can work without modification on larger-than-RAM data.
 <br/><br/>
 Use things like DuckDB (or SQLite, etc.) when you expect problems that don't easily fit in RAM.
 And when you do, use them with dplyr!
@@ -536,7 +560,7 @@ See this link for an example using the NYC taxi data:
 <br/><br/>
 DuckDB makes using a database in R *really* easy.
 <br/><br/>
-DuckDB's key advantage is that queries work well without modification on larger-than-main-memory data.
+DuckDB's key advantage is that queries can work without modification on larger-than-main-memory data.
 <br/><br/>
 Use it with dplyr.
 
@@ -588,6 +612,16 @@ li {
   width: 100%;
 }
 xmp {
+  font-family: monospace;
+  font-size: 28pt;
+  background-color: #11a9cf31;
+}
+pre {
+  font-family: monospace;
+  font-size: 28pt;
+  background-color: #11a9cf31;
+}
+.highlight {
   font-family: monospace;
   font-size: 28pt;
   background-color: #11a9cf31;
