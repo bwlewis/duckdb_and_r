@@ -50,7 +50,7 @@ Hannes Mühleisen
 <ul>
 <li> <b>Embedded</b> relational, SQL database library
 <ul>
-<li> Easy to install (<tt>install.packages("duckdb")</tt>)
+<li> Easy to install: <tt>install.packages("duckdb")</tt>
 <li> Zero-config, data in memory or in single file DBs
 </ul>
 <li> <b>Column-oriented</b> tabular data model (unlike SQLite, like R!)
@@ -60,7 +60,7 @@ Hannes Mühleisen
 
 <div class="slide">
 <br/>
-<b>"Hello world" SQL trivial example</b>
+<b>A trivial SQL example</b>
 <br/>
 <xmp>
 library(duckdb)
@@ -69,7 +69,8 @@ data("flights", package = "nycflights13")
 con <- dbConnect(duckdb())
 duckdb_register(con, "flights", flights)
 
-dbGetQuery(con, "SELECT origin, COUNT(*) AS n FROM flights GROUP BY origin")
+dbGetQuery(con,
+  "SELECT origin, COUNT(*) AS n FROM flights GROUP BY origin")
 
   origin      n
 1    EWR 120835
@@ -82,11 +83,14 @@ dbGetQuery(con, "SELECT origin, COUNT(*) AS n FROM flights GROUP BY origin")
 
 <div class="slide">
 <br/>
-<b>OK, how about just a simple example then?</b>
+<b>From trivial to merely simple...</b>
 <br/><br/>
 <br/><br/>
 <font style="font-size: 0.9em;">
-Name the top 3 destinations for each origin airport. Easy!
+Name the top 3 destinations for each origin airport.
+<br/><br/>
+<br/><br/>
+Easy!
 </font>
 </div>
 
@@ -95,7 +99,7 @@ Name the top 3 destinations for each origin airport. Easy!
 <b>One base R way</b>
 <br/>
 <xmp>
-Map(function(x) head(names(sort(table(x), decreasing = TRUE)), n = 3),
+Map(function(x) head(names(sort(table(x), decreasing = TRUE)), 3),
     split(flights[["dest"]], flights[["origin"]]))
 
 $EWR
@@ -114,11 +118,26 @@ $LGA
 <br/>
 <b>Dplyr</b>
 <br/>
+<div style="display: flex; font-size: 0.9em;">
+<div style="flex: 49%;">
 <xmp>
 library(dplyr)
-flights %>% group_by(origin) %>% count(dest, sort = TRUE) %>%
-  slice_head(n = 3) %>% select(origin, dest)
 
+flights %>%
+group_by(origin) %>%
+count(dest, sort = TRUE) %>%
+slice_head(n = 3) %>%
+select(origin, dest)
+
+
+
+
+</xmp>
+</div>
+<div style="flex: 2%;">
+</div>
+<div style="flex: 49%;">
+<xmp>
   origin dest 
 1 EWR    ORD  
 2 EWR    BOS  
@@ -132,43 +151,97 @@ flights %>% group_by(origin) %>% count(dest, sort = TRUE) %>%
 
 </xmp>
 </div>
+</div>
+
+</div>
 
 
 <div class="slide">
 <br/>
-<b>SQL (and DuckDB)</b> <font style="margin-left: 500px;">(Yikes!)</font>
+<b>SQL (and DuckDB)</b> Yikes!
 <br/>
+<div style="display: flex; font-size: 0.85em;">
+<div style="flex: 64%;">
 <xmp>
-Q = "
-SELECT origin, dest
+dbGetQuery(con,
+"SELECT origin, dest
 FROM (SELECT origin, dest, n
-  FROM (SELECT origin, dest, n, RANK() OVER (PARTITION BY origin ORDER BY n DESC) AS h
+  FROM (SELECT origin, dest, n, RANK() OVER (
+      PARTITION BY origin ORDER BY n DESC) AS h
     FROM (SELECT origin, dest, COUNT(*) AS n
       FROM flights
       GROUP BY origin, dest
     ) AS curly
   ) AS moe
   WHERE (h <= 3)
-) AS shemp ORDER BY origin;"
+) AS shemp ORDER BY origin;")
 
-
-dbGetQuery(con, Q)
 
 </xmp>
 </div>
+<div style="flex: 2%;"> </div>
+<div style="flex: 34%;">
+<xmp>
+  origin dest
+1    EWR  ORD
+2    EWR  BOS
+3    EWR  SFO
+4    JFK  LAX
+5    JFK  SFO
+6    JFK  BOS
+7    LGA  ATL
+8    LGA  ORD
+9    LGA  CLT
+
+
+
+
+</xmp>
+</div>
+</div>
+
+</div>
+
+
+
+<div class="slide">
+<br/><br/>
+<br/><br/>
+<center>
+<font style="font-size: 1em;font-weight: 450;">Simple data manipulation in R (and Python) can be hard in SQL.</font>
+<br/><br/>
+<br/><br/>
+<font style="font-size: 1em;font-weight: 450;">The converse is rarely true.</font>
+<br/><br/>
+</center>
+</div>
+
+
 
 
 <div class="slide">
 <br/>
 <b>Fortunately, DuckDB works with dplyr!</b>
 <br/>
+<div style="display: flex; font-size: 0.85em;">
+<div style="flex: 58%;">
 <xmp>
 tbl(con, "flights") %>%
   group_by(origin) %>%
-  count(dest, sort = TRUE) %>%
-  slice_max(order_by = n, n = 3) %>%
+  count(dest, sort = TRUE, name = "N") %>%
+  slice_max(order_by = N, n = 3) %>%
   select(origin, dest)
 
+
+
+
+
+
+</xmp>
+</div>
+<div style="flex: 2%;"> </div>
+<div style="flex: 38%;">
+<xmp>
   origin dest 
 1 JFK    LAX  
 2 JFK    SFO  
@@ -179,15 +252,19 @@ tbl(con, "flights") %>%
 7 EWR    ORD  
 8 EWR    BOS  
 9 EWR    SFO  
+
 </xmp>
+</div>
+</div>
+
 </div>
 
 <div class="slide">
 <br/>
-<b style="font-size: 1.2em;">When and how is a tool like DuckDB really useful?</b>
+<b style="font-size: 1em;">When and how is a tool like DuckDB really useful?</b>
 <br/><br/>
 <br/><br/>
-At least two facets to this, syntax and performance.
+At least two facets to this: syntax and performance.
 </div>
 
 <div class="slide">
@@ -197,18 +274,162 @@ At least two facets to this, syntax and performance.
 SQL is good for simple data processing tasks.
 <br/>
 <br/>
-It can be awful or even unusable for many other tasks we use R for.
+It can be unusable for many other tasks we use R for.
 <br/><br/>
 Start with base R or dplyr. Think about problems the dplyr way.
 <br/><br/>
-Dplyr works with your database anyway, so you'll have less to think about.
+Dplyr works with your database anyway, so one less language to think about!
 </div>
 
 <div class="slide">
 <br/>
-<b>Another syntax example, "as of" join one liners</b>
+<b>Another example: "as of" joins</b>
 <br/>
-In R and Python...
+<font style="font-size: 0.9em;">Basic idea:</font>
+
+<style>
+caption {
+  font-size: 1.8em;
+  font-style: italic;
+  color: #666;
+  margin-bottom: 12px;
+}
+td,th {
+  font-size: 1.8em;
+}
+th {
+  border-bottom: 2px solid black;
+}
+table tr td:first-child {
+  padding-right: 40px;
+}
+</style>
+
+<div style="display: flex; margin-top: 40px;">
+<div style="flex: 25%;">
+<table>
+<caption>calendar</caption>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left" style="padding-right: 0px;">2020-01-01</td>
+</tr>
+<tr class="even">
+<td align="left" style="padding-right: 0px;">2020-02-01</td>
+</tr>
+<tr class="odd">
+<td align="left" style="padding-right: 0px;">2020-03-01</td>
+</tr>
+<tr class="even">
+<td align="left" style="padding-right: 0px;">2020-04-01</td>
+</tr>
+<tr class="odd">
+<td align="left" style="padding-right: 0px;">2020-05-01</td>
+</tr>
+<tr class="even">
+<td align="left" style="padding-right: 0px;">2020-06-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="margin-left: 10%; flex: 30%;">
+<table>
+<caption>data</caption>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2019-11-18</td>
+<td align="right">0.6870228</td>
+</tr>
+<tr class="even">
+<td align="left">2020-01-05</td>
+<td align="right">0.0617863</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-01-10</td>
+<td align="right">0.1765568</td>
+</tr>
+<tr class="even">
+<td align="left">2020-02-01</td>
+<td align="right">0.5000000</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-02-12</td>
+<td align="right">0.2059746</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-13</td>
+<td align="right">0.6291140</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-05-08</td>
+<td align="right">0.3841037</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="margin-left: 10%; flex: 30%;">
+<table>
+<caption>‘as of’ desired output</caption>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2020-01-01</td>
+<td align="right">0.6870228</td>
+</tr>
+<tr class="even">
+<td align="left">2020-02-01</td>
+<td align="right">0.5000000</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-03-01</td>
+<td align="right">0.2059746</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-01</td>
+<td align="right">0.2059746</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-05-01</td>
+<td align="right">0.6291140</td>
+</tr>
+<tr class="even">
+<td align="left">2020-06-01</td>
+<td align="right">0.3841037</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<br/>
+<font style="font-size: 0.9em;">
+"For each 'calendar' date, find the most recent data value <i>as of</i> that date."
+</font>
+
+
+
+</div>
+
+<div class="slide">
+<br/>
+<b>Expressed in R and Python:</b>
+<br/>
+<br/>
 <xmp>
 data[calendar, on = "date", roll = TRUE]         # using R data.table
 
@@ -227,8 +448,11 @@ for full details.
 </div>
 
 <div class="slide">
+<div style="position: absolute; left: 60%;">
+<img src="swear.webp"/>
+</div>
 <br/>
-<b>In SQL</b> <font style="margin-left: 200px">(not a one-liner!)</font>
+<b>In SQL</b>
 <br/>
 <xmp style="font-size: 0.4em;">WITH z AS (
   SELECT date, (NULL) AS value FROM calendar
@@ -266,20 +490,24 @@ SELECT * FROM d UNION SELECT * FROM d ORDER BY date
 
 <div class="slide">
 <br/>
-<b>Performance of that "as of" join on my laptop</b>
+<b>How about performance of that "as of" join on my laptop?</b>
 <br/>
-<img src="asof_upshot.jpg" width="85%"/>
+<img src="asof_upshot.jpg" width="90%"/>
+<br/>
+<font style="font-size: 0.9em;">
+It's a small example: about 5 million data rows, 250K calendar rows!
+
 </div>
 
 <div class="slide">
 <br/>
 <b>Performance advice</b>
 <br/><br/>
-In many tests, R outperforms DuckDB for in-memory problems across the board (sometimes by huge margins).
+R outperforms DuckDB for in-memory problems (sometimes by huge margins).
 <br/><br/>
 DuckDB's advantage is that it can work without modification on larger-than-main-memory data.
 <br/><br/>
-Use things like DuckDB (or SQLite) when you expect problems that don't easily fit in RAM.
+Use things like DuckDB (or SQLite, etc.) when you expect problems that don't easily fit in RAM.
 And when you do, use them with dplyr!
 </div>
 
@@ -304,6 +532,22 @@ https://bwlewis.github.io/duckdb_and_r/thoughts_on_duckdb.html
 
 
 
+<div class="slide">
+<br/>
+<b>Bonus performance testing tip</b>
+<br/><br/>
+Modern computers have all kinds of thermal and power saving CPU scaling going on
+that can really mess with performance measurements.
+<br/>
+<br/>
+This can help mitigate that:
+<xmp>
+echo "performance" | \
+  sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+</xmp>
+
+</div>
 
 
 
