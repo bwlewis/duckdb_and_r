@@ -82,7 +82,7 @@ t3 <- replicate(10, system.time({
 
 ## Dplyr
 
-The dplyr way is also extremely fast, and uses really clear syntax. It's
+The dplyr way is also extremely fast and uses really clear syntax. It's
 an elegant approach to solving this problem.
 
 ```{r, eval = FALSE}
@@ -159,8 +159,10 @@ t5 <- replicate(10, system.time({
 all(apply(merge(vec, duck, by = "company")[, 2:3], 1, diff) == 0)
 # [1] TRUE
 ```
-Aha success! But still very slow. I'm not sure, but I wonder if DuckDB's silent
-mis-understanding of an R type is a bug? I'll report that to the authors.
+Aha success! But still very slow. I wonder if DuckDB's silent
+mis-understanding of an R type is a bug? It would probably be
+better to stop with an error or at least display a warning.
+I'll report that to the authors.
 
 
 ## Performance and comments
@@ -187,7 +189,8 @@ Neither DuckDB nor SQLite distinguish themselves performance-wise in this
 seemingly simple task. So much for query optimization I guess.  All of the R
 approaches work very well; choosing among them boils down to syntax preference.
 
-### The SQL query eludes dplyr
+<h3 style="text-decoration: line-through;">
+The SQL query eludes dplyr</h3>
 
 My first, lazy, attempt at a SQL solution to this problem was to simply have
 dplyr write the query for me! This is often a neat way to write complex
@@ -196,7 +199,6 @@ SQL queries. Here is an example of a basic grouped aggregation:
 tbl(con, "example") %>% group_by(company) %>% summarize(avg = mean(value, na.rm = T)) %>% show_query()
 ```
 ```
-<SQL>
 SELECT "company", AVG("value") AS "avg"
 FROM "example"
 GROUP BY "company"
@@ -210,8 +212,26 @@ tbl(con, "example") %>% group_by(company) %>% summarize(value = last(value, orde
 ```
 Error: `last()` is only available in a windowed (`mutate()`) context
 ```
-I guess there exist few corner cases like this where dplyr can't yet generate
-appropriate back-end queries.
+UPDATE: Hadley Wickham explains that `last` is subject to some query translation issues, but an
+equivalent alternative dplyr formulation works fine:
+```{r, eval = FALSE}
+example %>%
+  group_by(company) %>%
+  arrange(desc(date), .by_group = TRUE) %>%
+  filter(row_number() == 1L) %>%
+  select(company, value)
+```
+```
+SELECT `company`, `value`
+FROM (SELECT `date`, `company`, `value`
+FROM (SELECT `date`, `company`, `value`,
+  ROW_NUMBER() OVER (
+    PARTITION BY `company` ORDER BY `date` DESC
+  ) AS `q01`
+FROM `df`) `q01`
+WHERE (`q01` = 1)) `q02`
+```
+
 
 
 ### Appendix: What's with that 'AS yikes' in the query?
@@ -236,7 +256,7 @@ SELECT company, MAX(last_value) FROM
         RANGE BETWEEN UNBOUNDED PRECEDING AND 
         UNBOUNDED FOLLOWING
   ) last_value
-FROM example) as superfluous_required_alias
+FROM example) AS superfluous_required_alias
 GROUP BY company;
 ```
 
