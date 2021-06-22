@@ -140,6 +140,50 @@ $LGA
 
 <div class="slide">
 <br/>
+<b>One base R way</b>
+<br/>
+<pre>
+
+Map(function(x) head(names(sort(table(x), decreasing = TRUE)), 3),
+    <b class='highlight'>split(flights[["dest"]], flights[["origin"]])</b>)
+
+$EWR
+[1] "ORD" "BOS" "SFO"
+
+$JFK
+[1] "LAX" "SFO" "BOS"
+
+$LGA
+[1] "ATL" "ORD" "CLT"
+
+</pre>
+</div>
+
+<div class="slide">
+<br/>
+<b>One base R way</b>
+<br/>
+<pre>
+
+Map(<b class="highlight">function(x) head(names(sort(table(x), decreasing = TRUE)), 3)</b>,
+    split(flights[["dest"]], flights[["origin"]]))
+
+$EWR
+[1] "ORD" "BOS" "SFO"
+
+$JFK
+[1] "LAX" "SFO" "BOS"
+
+$LGA
+[1] "ATL" "ORD" "CLT"
+
+</pre>
+</div>
+
+
+
+<div class="slide">
+<br/>
 <b>Dplyr</b>
 <br/>
 <div style="display: flex; font-size: 0.9em;">
@@ -252,19 +296,17 @@ FROM (SELECT origin, dest, n
 <br/>
 <div style="display: flex; font-size: 0.85em;">
 <div style="flex: 58%;">
-<xmp>
-tbl(con, "flights") %>%
-  group_by(origin) %>%
-  count(dest, sort = TRUE, name = "N") %>%
-  slice_max(order_by = N, n = 3) %>%
-  select(origin, dest)
+<pre style="line-height: 60px;">
+<b class='highlight'>tbl(con, "flights")</b> %>%
+group_by(origin) %>%
+count(dest, sort = TRUE, name = "N") %>%
+slice_max(order_by = N, n = 3) %>%
+select(origin, dest)
 
 
 
 
-
-
-</xmp>
+</pre>
 </div>
 <div style="flex: 2%;"> </div>
 <div style="flex: 38%;">

@@ -124,7 +124,7 @@ solution to every problem.
 <font style="text-decoration: line-through;">Indeed, dplyr fails to figure out how to translate even this simple problem for back-end databases.</font> (Update: Hadley Wickham indicates that, indeed, dplyr can in fact generate appropriate SQL here.)
 The dplyr approach also
 brings with it considerable complexity for some tasks--just look at the
-(ridiculously) large number of functions in the dplyr package:
+large number of functions in the dplyr package:
 ```{r}
 suppressPackageStartupMessages(library(dplyr))
 length(ls("package:dplyr"))
