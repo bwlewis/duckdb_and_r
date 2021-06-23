@@ -3,9 +3,9 @@
 This is work in progress as of May 2021, not all examples are complete and
 things are changing. I organize my thoughts into five easy pieces below.
 
-A talk on this topic at the Cleveland R Users Group:
+Slides from a talk on this topic at the Cleveland R Users Group:
 
-* [Talk](https://bwlewis.github.io/talk/talk.html)
+* [Slides](https://bwlewis.github.io/duckdb_and_r/talk/talk.html)
 
 * [Overview](https://bwlewis.github.io/duckdb_and_r/thoughts_on_duckdb.html)
 
