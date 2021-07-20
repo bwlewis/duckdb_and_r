@@ -4,8 +4,8 @@ R packages discussed in these notes include duckdb (of course), dplyr,
 data.table, fst, xts, RSQLite, and vroom and a little Python Pandas by way of
 reticulate.
 
-The notes exhibit a disdain for SQL. I'm not alone in this observation, for
-a much more comprehensive discussion on that topic see these really
+The notes exhibit something of a disdain for SQL. For
+a much more comprehensive discussion on difficulties with SQL, see these really
 interesting notes by Jamie Brandon:
 https://scattered-thoughts.net/writing/against-sql/.
 
