@@ -26,8 +26,15 @@ https://bwlewis.github.io/duckdb_and_r/last/last.html .
 Here is a very easily stated task:
 
 > For each company in the example table, return the most recent value.
+> If the most recent dates are not unique within a company, return any one last value.
 
-How simple is that?
+*Pretty simple*?
+
+I am indebted to Richard Wesley at DuckDB Labs for teaching me a superior SQL
+approach (the join approach below) to solving this problem than my original
+one. And to Hadley Wickham for showing me how to use dplyr to generate queries
+like this. Please add your name here if you find other ways to improve these
+notes!
 
 
 ## The Dplyr/Tidy Data way
@@ -45,19 +52,10 @@ Wow, you can almost put a period at the end and read it like a sentence.
 ## Low-level imperative pseudocode
 
 Now let's imagine we are working with a very low-level imperative programming
-language. One approach might go something like:
+language.
 
-```
-groups = unique(company)
-for each group g
-  let i = integer index that reverse orders date in group g
-  keep row associated with i = 1
-end for
-```
-
-Or, if you felt like being less efficient about things you could make several
-passes over the data like so:
-
+An iterative solution approach that unnecessarily makes multiple passes over
+the data might look like (the "window" approach):
 ```
 groups = unique(company)
 for each group g
@@ -68,12 +66,38 @@ for each row in example table
 end for
 ```
 
-## SQL Oh My
+Alternatively, we could perform several conceptual loops (the "join" approach):
+```
+1 For each company, find the max(date) for that company and build a table called 'm'
+  of all such company, max(date) pairs.
+2 For each row in m, find value(s) that correspond to the company and date.
+3 Take (for instance) the max(value) by company of the output to get down to one row per company.
+```
 
-As far as I can tell, a standard SQL approach to solving this task looks
-remarkably like the latter, less efficient, pseudocode above except harder to
-read. The gist is number each row using date order within group and then go
-through and pick out rows with the right number:
+## SQL Approaches
+
+The SQL approaches correspond to the above "window" and "join" pseudocode. The
+join approach was contributed by Richard Wesley at DuckDB. It's much more
+efficient in SQL databases than the window approach, apparently.
+
+### The join approach
+
+This is courtesy of Richard Wesley at DuckDB. It's vastly more efficient than the
+window approach in DuckDB.
+
+```
+WITH ans AS (SELECT e.company, value FROM example AS e,
+  (SELECT company, MAX(date) AS date FROM example GROUP BY company) AS m
+  WHERE e.company = m.company AND e.date = m.date)
+SELECT company, MAX(value) FROM ans GROUP by company
+```
+
+### The window approach
+
+A standard SQL window approach to solving this task looks remarkably like the
+first pseudocode above except harder to read. The gist is number each row using
+date order within group and then go through and pick out rows with the right
+number:
 
 ```
 SELECT company, value FROM
@@ -95,25 +119,19 @@ instance illuminating discussions on this problem for PostgreSQL and MySQL:
 * https://hakibenita.com/sql-group-by-first-last-value
 * https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293
 
-I wonder if SQL is simply a bad way to solve this kind of simple problem?
+I wonder if SQL is simply a bad way to express a solution to this kind of
+simple problem?
 
 
 ## Which approach looks more declarative to you?
 
-Yeah.
-
 SQL can be really nice for simple, basic aggregation and filtering.  It's also
-really good at imposing constraints on data.  But hey, I used to work at a
-database company and I've seen SQL queries that would make Mike Stonebraker
-smash his banjo like Pete Townshend. SQL can be a mess, is hard to compose,
-and sometimes makes it difficult to express even seemingly simple objectives
-like the one above.
-
-My advice for most people and most problems is this: just use dplyr if you can.
-Don't use SQL.  Try to think about your data munging problems the dplyr way.
-For anything other than the most basic operations, I think dplyr is a better
-through-out grammar of data manipulation than SQL.  And besides, dplyr can
-usually front your database anyway.
+really good at imposing constraints on data. But my advice for most people and
+most problems is this: just use dplyr if you can.  Don't use SQL.  Try to think
+about your data munging problems the dplyr way.  For anything other than the
+most basic operations, I think dplyr is a better through-out grammar of data
+manipulation than SQL.  And besides, dplyr can usually front your database
+anyway.
 
 
 ## Look, dplyr isn't perfect either (alas, nothing is)

@@ -18,8 +18,8 @@ make_believe <- inverse.rle(structure(make_believe, class = "rle"))
 N <- length(make_believe)
 
 example <- data.frame(date = Sys.Date() - sample(365, N, replace = TRUE),
-                      company =  sample(make_believe), value = runif(N), stringsAsFactors = TRUE)
-example$date <- as.POSIXct(example$date) + runif(N)
+                      company =  sample(make_believe), value = round(runif(N), 1), stringsAsFactors = TRUE)
+example$date <- as.POSIXct(example$date) + example$value
 
 
 # Task: obtain the last value by date per company group,
@@ -71,7 +71,7 @@ duckdb_register(con, "example", example)
 
 
 # I finally figured this out but it's incredibly slow :/
-duck1 <- dbGetQuery(con, "SELECT company, value FROM (SELECT company, date, value, ROW_NUMBER() OVER (PARTITION BY company ORDER BY date DESC) AS row FROM example) AS yikes WHERE row = 1")
+duck1 <- dbGetQuery(con, "WITH ans AS (SELECT e.company, value FROM example AS e, (SELECT company, MAX(date) AS date FROM example GROUP BY company) AS m WHERE e.company = m.company AND e.date = m.date) SELECT company, MAX(value) FROM ans GROUP by company")
 # Oh yeah, and the answers are wrong. Arrggghhhhh.
 
 # SQLite gets the right answers with the same query but slowly.
@@ -79,7 +79,7 @@ library(RSQLite)
 lite <- dbConnect(RSQLite::SQLite(), ":memory:")
 dbWriteTable(lite, "example", example)
 t6 <- replicate(10, system.time({
-  dlite <<- dbGetQuery(lite, "SELECT company, value FROM (SELECT company, date, value, ROW_NUMBER() OVER (PARTITION BY company ORDER BY date DESC) AS row FROM example) AS yikes WHERE row = 1")
+  dlite <<- dbGetQuery(lite, "WITH ans AS (SELECT e.company, value FROM example AS e, (SELECT company, MAX(date) AS date FROM example GROUP BY company) AS m WHERE e.company = m.company AND e.date = m.date) SELECT company, MAX(value) FROM ans GROUP by company")
 }))
 dbDisconnect(lite)
 
@@ -91,7 +91,7 @@ duckdb_unregister(con, "example")
 example$date_numeric <- as.numeric(example$date)
 duckdb_register(con, "example", example)
 t5 <- replicate(10, system.time({
-  duck <<- dbGetQuery(con, "SELECT company, value FROM (SELECT company, date_numeric, value, ROW_NUMBER() OVER (PARTITION BY company ORDER BY date_numeric DESC) AS row FROM example) AS yikes WHERE row = 1")
+  duck <<- dbGetQuery(con, "WITH ans AS (SELECT e.company, value FROM example AS e, (SELECT company, MAX(date_numeric) AS date FROM example GROUP BY company) AS m WHERE e.company = m.company AND e.date_numeric = m.date) SELECT company, MAX(value) FROM ans GROUP by company")
 }))
 
 

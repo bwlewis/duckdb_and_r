@@ -7,13 +7,17 @@ analysis work using, of all things, Salesforce data.  The task applied to table
 or R data frame is a simple one:
 
 * Group data by one column.
-* For each group, select the last row within the group as ordered by an ordering column.
+* For each group, select exactly one last row within the group as ordered by an ordering column (choosing arbitrarily among tied ordered values).
 
 The result is a new data frame or table that subsets the original rows. In
 practice there might be millions of rows and thousands of groups (or more).
 It's a simple task. A representative example we use below simply returns the
 most recent row by group.
 
+I am indebted to Richard Wesley at DuckDB Labs for teaching me a superior
+SQL approach to solving this problem than my original one. See 
+https://bwlewis.github.io/duckdb_and_r/last/declarative.html for a discussion
+of that.
 
 ## Data setup
 
@@ -28,17 +32,19 @@ source("fake.r")
 set.seed(1)
 N_GROUPS <- 100
 MAX_LEN <- 1e5
+
 make_believe <- list(lengths = sample(MAX_LEN, N_GROUPS, replace = TRUE),
                      values = paste(sample(names, N_GROUPS, replace = TRUE),
                                     sample(sectors, N_GROUPS, replace = TRUE)))
 make_believe <- inverse.rle(structure(make_believe, class = "rle"))
 N <- length(make_believe)
+
 example <- data.frame(date = Sys.Date() - sample(365, N, replace = TRUE),
-                      company =  sample(make_believe), value = runif(N), stringsAsFactors = TRUE)
-example[["date"]] <- as.POSIXct(example[["date"]]) + runif(N)
+                      company =  sample(make_believe), value = round(runif(N), 1), stringsAsFactors = TRUE)
+example[["date"]] <- as.POSIXct(example[["date"]]) + example[["value"]]
 ```
-Note that I've added a random fractional part to the dates to get a unique
-last date for each group. This uses a special R feature where the POSIXct
+The example dates have added a small fractional part (example values) to
+make them semi-unique.  This uses a special R feature where the POSIXct
 date class can have sub-second accuracy. As we shall see below, this can
 get us into trouble sometimes...
 
@@ -91,78 +97,50 @@ t4 <- replicate(10, system.time({
 }))
 ```
 
-## SQL/DuckDB try 1
+## SQL/RSQLite
 
-This may simply be an illustration of my ignorance, but I struggled to find a
-simple SQL solution to this apparently easy task. Eventually I cooked up
-something using a SQL WINDOW-ed operation, which admittedly is pretty awkward
-to read. Perhaps the following can be improved?
+The most efficient SQL solution to this problem first finds the max(date) by company
+and then joins that result back with the original table to obtain corresponding values.
+Then, duplicates are removed as needed to obtain a single value per company.
+For a discussion of this somewhat verbose syntax, see
+https://bwlewis.github.io/duckdb_and_r/last/declarative.html
 
-The DuckDB example notably uses DuckDB directly on an R data frame, a really
-cool feature...
-
-```{r, eval = FALSE}
-library(duckdb)
-con <- dbConnect(duckdb())
-duckdb_register(con, "example", example)
-
-duck <- dbGetQuery(con, "SELECT company, value FROM
-(SELECT company, date, value, ROW_NUMBER() OVER
-  (PARTITION BY company ORDER BY date DESC) AS row FROM example)
-AS yikes WHERE row = 1")
-```
-Hmmm. That seemed to run slowly, and unfortunately the results don't agree with
-any of the previous R approaches?! See, for instance:
-```{r, eval = FALSE}
-all(apply(merge(vec, duck, by = "company")[, 2:3], 1, diff) == 0)
-# [1] FALSE
-```
-
-Maybe the query is wrong? Let's see...
-
-## SQL/RSQLite  try 2
-
-Let's try that last SQL query using SQLite database engine to see if it works.
+Fist let's try a query with the  SQLite database engine to see if it works.
 ```{r, eval = FALSE}
 library(RSQLite)
 lite <- dbConnect(RSQLite::SQLite(), ":memory:")
 dbWriteTable(lite, "example", example)
 t6 <- replicate(10, system.time({
-  dlite <<- dbGetQuery(lite, "SELECT company, value FROM
-(SELECT company, date, value, ROW_NUMBER() OVER
-  (PARTITION BY company ORDER BY date DESC) AS row FROM example)
-AS yikes WHERE row = 1")
+  dlite <<- dbGetQuery(lite, "WITH ans AS (SELECT e.company, value FROM example AS e,
+    (SELECT company, MAX(date) AS date FROM example GROUP BY company) AS m
+     WHERE e.company = m.company AND e.date = m.date)
+  SELECT company, MAX(value) FROM ans GROUP by company")
 }))
-
-all(apply(merge(vec, duck, by = "company")[, 2:3], 1, diff) == 0)
-# [1] TRUE
 ```
-Success! After puzzling over this, I realized that the culprit
-is my use of R's extended POSIX time time with less than second
-precision. Although RSQLite seems to understand it fine, DuckDB
+After puzzling over discrepancies I saw when trying this with DuckDB, I
+realized that the culprit is my use of R's extended POSIX time time with less
+than second precision. Although RSQLite seems to understand it fine, DuckDB
 does not.
 
-## SQL/DuckDB try 3
+## SQL/DuckDB
 
-So, let's try this again, explicitly converting R's POSIX type
-into something DuckDB is sure to understand, double-precision
-numbers:
+So, let's try this with DuckDB  but explicitly converting R's POSIX type into
+something DuckDB is sure to understand, double-precision numbers:
 
 ```{r, eval=FALSE}
 duckdb_unregister(con, "example")
 example[["date_numeric"]] <- as.numeric(example[["date"]])
 duckdb_register(con, "example", example)
 t5 <- replicate(10, system.time({
-  duck <<- dbGetQuery(con, "SELECT company, value FROM (SELECT company, date, value, ROW_NUMBER() OVER (PARTITION BY company ORDER BY date DESC) AS row FROM example) AS yikes WHERE row = 1")
+  duck <<- dbGetQuery(con, "WITH ans AS (SELECT e.company, value FROM example AS e,
+    (SELECT company, MAX(date_numeric) AS date FROM example GROUP BY company) AS m
+     WHERE e.company = m.company AND e.date_numeric = m.date)
+  SELECT company, MAX(value) FROM ans GROUP by company")
 }))
-
-all(apply(merge(vec, duck, by = "company")[, 2:3], 1, diff) == 0)
-# [1] TRUE
 ```
-Aha success! But still very slow. I wonder if DuckDB's silent
-mis-understanding of an R type is a bug? It would probably be
-better to stop with an error or at least display a warning.
-I'll report that to the authors.
+I think DuckDB's silent mis-understanding of an R type is a bug? It would
+probably be better to stop with an error or at least display a warning.  I'll
+report that to the authors.
 
 
 ## Performance and comments
