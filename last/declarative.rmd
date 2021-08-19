@@ -95,7 +95,7 @@ instance illuminating discussions on this problem for PostgreSQL and MySQL:
 * https://hakibenita.com/sql-group-by-first-last-value
 * https://stackoverflow.com/questions/1313120/retrieving-the-last-record-in-each-group-mysql#1313293
 
-I argue that SQL is simply a bad way to solve this kind of simple problem.
+I wonder if SQL is simply a bad way to solve this kind of simple problem?
 
 
 ## Which approach looks more declarative to you?
