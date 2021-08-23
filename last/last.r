@@ -106,6 +106,6 @@ timings <- rbind(data.frame(approach = "Base R aggregate", elapsed = t1[3, ]),
 jpeg(file="last_upshot.jpg", quality=100, width=1000)
 boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
 m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
-text(seq(NROW(m)), y = 10, labels = sprintf("%.2f", m$mean), cex = 1.5)
+text(seq(NROW(m)), y = 3, labels = sprintf("%.2f", m$mean), cex = 1.5)
 dev.off()
 
