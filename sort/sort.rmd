@@ -1,9 +1,9 @@
-# The DuckDB Sort Example
+# The DuckDB Small Integer Sort Example
 
-This example comes from DuckDB, see the original 2021-08-27 article here:
+These examples come from DuckDB, see the original 2021-08-27 article here:
 https://duckdb.org/2021/08/27/external-sorting.html.
 
-This is an exceedingly simple example that sorts 100 million randomly sampled
+The first example is a very simple one that sorts 100 million randomly sampled
 integers. The example illustrates the speed of radix sort in such problems.
 
 Despite mentioning R and dplyr in particular, no comparisons with  R were made
@@ -21,13 +21,7 @@ So here we go...
 Not much going on here, sample integers from 1 to 100 million in random order
 and put into a column in a data frame.
 
-I also set a variable for the number of threads to use, which will be used
-in various ways independently by each algorithm later. Later results are
-shown for `NTHREADS = 1` and 8 (see caveats below).
-Base R and dplyr results are always single-threaded.
-
 ```{r, echo=TRUE, eval=FALSE}
-NTHREADS = 8
 set.seed(1)
 x <- data.frame(ints = sample(seq(100e6)))
 ```
@@ -44,20 +38,16 @@ t_base <- replicate(10, system.time({s <<- x[order(x[["ints"]]), ]}))
 ## DuckDB
 
 The next example uses the elegant native interface between R and DuckDB, and
-set the number of threads here in an environment variable.
+set the number of threads to use via the DuckDB PRAGMA approach (see
+https://duckdb.org/docs/sql/pragmas). This note displays single-threaded and
+eight-threaded results.
 
-The performance results section below however seems to indicate that,
-apparently, DuckDB is ignoring this environment variable and running on one
-thread? Perhaps this is a bug?  I think the results reflect a single-thread
-DuckDB radix sort. For comparison, single-threaded results for everything are
-also shown at the end.
 
 ```{r, echo=TRUE, eval=FALSE}
-Sys.setenv(DUCKDB_NO_THREADS=NTHREADS)
-
 library(duckdb)
 con <- dbConnect(duckdb())
 duckdb_register(con, "x", x)
+dbExecute(con, "PRAGMA threads=8;")
 t_duck <- replicate(10, system.time({s_duck <<- dbGetQuery(con, "SELECT * FROM x ORDER BY ints")}))
 ```
 
@@ -68,7 +58,7 @@ threads to use.
 
 ```{r, echo=TRUE, eval=FALSE}
 library(data.table)
-setDTthreads(NTHREADS)
+setDTthreads(8)
 t_dt <- replicate(10, system.time({s_dt <<- data.table(x, key="ints")}))
 ```
 
@@ -83,12 +73,11 @@ t_dpl <- replicate(10, system.time({s_dpl <<- x %>% arrange(ints)}))
 
 ## Performance and comments
 
-Performance results on my 8-core Ryzen laptop are collected below.
-Two plots are shown, one for `NTHREADS = 1` and for
-`NTHREADS = 8`, which really only affect the data.table results.
+Performance results on my 8-core Ryzen laptop are collected below.  Two plots
+are shown, one for single-threaded runs and for eight thread runs, which only
+affect the data.table and duckDB results.
 
 - The base R and dplyr sort are always single threaded.
-- I'm pretty sure DuckDB is only running single-threaded here, too.
 - Despite dplyr using base R under the hood it is somehow slightly faster.
 - Despite base R using an algorithm based on the data.table one, it's faster than data.table in this example.
 
@@ -106,7 +95,6 @@ Systems like DuckDB, on the other hand, "just work" on such large problems with
 really no significant changes.  That can be a real advantage!
 
 ```{r, echo=TRUE, eval=FALSE}
-# -----------------------------------------------------------------------------------------------
 timings <- rbind(data.frame(approach = "DuckDB", elapsed = t_duck[3, ]),
                  data.frame(approach = "base R", elapsed = t_base[3, ]),
                  data.frame(approach = "dplyr", elapsed = t_dpl[3, ]),
@@ -130,9 +118,10 @@ NTHREADS = 8
 
 # Note: Radix sorting on non-numeric values
 
-Radix sorts are usually one of the fastest ways to sort most data types. But
-their universal application can sometimes yield unexpected results, especially
-for UTF8 character data. Consider the following simple example:
+Radix sorts are usually one of the fastest ways to sort most data types. But as
+with many sorting methods not paying attention to locale-based collation order
+may yield unexpected results, especially for UTF8 character data. Consider the
+following simple example:
 
 ## Base R
 
@@ -154,6 +143,15 @@ duckdb_register(con, "x", x)
 dbGetQuery(con, "SELECT * FROM x ORDER BY a")
 ```
 
+## DuckDB with `default_collation='nocase'`
+
+```{r, echo=TRUE}
+library(duckdb)
+con <- dbConnect(duckdb())
+duckdb_register(con, "x", x)
+dbExecute(con, "PRAGMA default_collation='nocase';")
+dbGetQuery(con, "SELECT * FROM x ORDER BY a")
+```
 
 ## Data.table
 
@@ -171,17 +169,50 @@ x[order(x$a, method="radix"),,drop = FALSE]
 So what's going on here? The default radix sort used by DuckDB and data.table
 are effectively sorting character values as ASCII (in the C locale), instead of
 in the UTF8 collation locale in use by R, which in this case is `en_US.UTF-8`.
+Base R defaults to using a collation sort order appropriate to the system
+locale.
 
-Base R defaults to using a shell sort algorithm for characters for this reason.
+Fortunately, one can easily set the collation order in DuckDB as shown in the
+second DuckDB example above. I do not know of a way to adjust this in data.table
+however :(.
 
-I'm not sure this is a very big deal, but it is something to be aware of.
 
-<br/><br/>
+# TPCDS Customer Type Payload
 
-# Session
+This is another smallish, in-memory test in the blog post (the
+https://duckdb.org/images/blog/sorting/tpcds_customer_type_payload_barplot.svg
+plot).
+
+This example uses the TPC `dsdgen` program to generate a sample table of 5
+million (SF=300) rows and 18 integer- or character-valued columns. Both tables
+easily fit into my laptop's memory.
+
+The example compares sorting performance for the whole table using either three
+integer columns or two character-valued columns. It replicates the `SF=300` case
+shown in the blog post.
+
+Now, the TPC dsdgen program is proprietary so I can't redistributed it
+here. But it's easy to download and compile from
+http://tpc.org/tpc_documents_current_versions/current_specifications5.asp.
+These notes assume that the `dsgen` program is available and set in the
+`DSDGEN_PATH` variable in the
+https://bwlewis.github.io/duckdb_and_r/sort/tpcds_customer.r 
+script.
+
+Once you've got `dsdgen`, running the script 
+https://bwlewis.github.io/duckdb_and_r/sort/tpcds_customer.r 
+will produce a plot similar to:
+
+<img src="tpcds_customer_upshot.jpg"> </img>
+
+
+
+# Session info
 
 ```{r, echo=TRUE}
 sessionInfo()
 cat(paste(system("free", intern=TRUE), collapse="\n"))
 cat(paste(system("cat /proc/cpuinfo", intern=TRUE), collapse="\n"))
 ```
+
+

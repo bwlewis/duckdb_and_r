@@ -1,6 +1,3 @@
-NTHREADS = 1
-Sys.setenv(DUCKDB_NO_THREADS=NTHREADS)
-
 library(duckdb)
 con <- dbConnect(duckdb())
 
@@ -8,6 +5,7 @@ con <- dbConnect(duckdb())
 set.seed(1)
 x <- data.frame(ints = sample(seq(100e6)))
 duckdb_register(con, "x", x)
+dbExecute(con, "PRAGMA threads=8;")
 
 t_duck <- replicate(10, system.time({s_duck <<- dbGetQuery(con, "SELECT * FROM x ORDER BY ints")}))
 
@@ -17,7 +15,7 @@ library(dplyr)
 t_dpl <- replicate(10, system.time({s_dpl <<- x %>% arrange(ints)}))
 
 library(data.table)
-setDTthreads(NTHREADS)
+setDTthreads(8)
 t_dt <- replicate(10, system.time({s_dt <<- data.table(x, key="ints")}))
 
 
@@ -29,5 +27,5 @@ timings <- rbind(data.frame(approach = "DuckDB", elapsed = t_duck[3, ]),
 jpeg(file="sort_upshot.jpg", quality=100, width=1000)
 boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
 m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
-text(seq(NROW(m)), y = 6, labels = sprintf("%.2f", m$mean), cex = 1.5)
+text(seq(NROW(m)), y = 8, labels = sprintf("%.2f", m$mean), cex = 1.5)
 dev.off()
