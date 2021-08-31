@@ -21,7 +21,6 @@ example <- data.frame(date = Sys.Date() - sample(365, N, replace = TRUE),
                       company =  sample(make_believe), value = round(runif(N), 1), stringsAsFactors = TRUE)
 example$date <- as.POSIXct(example$date) + example$value
 
-
 # Task: obtain the last value by date per company group,
 
 # One base R approach uses order and aggregate...it's a bit slow but stratighforward and the documentation
@@ -69,8 +68,6 @@ duckdb_register(con, "example", example)
 #  tbl(con, "example") %>% group_by(company) %>% summarize(value = last(value, order_by = date))
 #Error: `last()` is only available in a windowed (`mutate()`) context
 
-
-# I finally figured this out but it's incredibly slow :/
 duck1 <- dbGetQuery(con, "WITH ans AS (SELECT e.company, value FROM example AS e, (SELECT company, MAX(date) AS date FROM example GROUP BY company) AS m WHERE e.company = m.company AND e.date = m.date) SELECT company, MAX(value) FROM ans GROUP by company")
 # Oh yeah, and the answers are wrong. Arrggghhhhh.
 

@@ -1,0 +1,166 @@
+# The DuckDB Sort Example
+
+This example comes from DuckDB, see the original 2021-08-27 article here:
+https://duckdb.org/2021/08/27/external-sorting.html.
+
+This is an exceedingly simple example that sorts 100 million randomly sampled
+integers. The example illustrates the speed of radix sort in such problems.
+
+Despite mentioning R and dplyr in particular, no comparisons with  R were made
+in the DuckDB article.
+
+Note that a radix sort is used by R's data.table
+(https://rdatatable.gitlab.io/data.table/). A single-threaded version of the
+data.table radix sort was adopted internally by R some time ago (see the R
+source main/radixsort.).
+
+So here we go...
+
+## Set up
+
+Not much going on here, sample integers from 1 to 100 million in random order
+and put into a column in a data frame.
+
+I also set a variable for the number of threads to use, which will be used
+in various ways independently by each algorithm later. Later results are
+shown for `NTHREADS = 1` and 8 (see caveats below).
+Base R and dplyr results are always single-threaded.
+
+```{r, echo=TRUE, eval=FALSE}
+NTHREADS = 8
+set.seed(1)
+x <- data.frame(ints = sample(seq(100e6)))
+```
+
+# Base R
+
+The base R sort defaults to a single-threaded radix sort (based on the
+data.table sort) for integer sorting problems.
+
+```{r, echo=TRUE, eval=FALSE}
+t_base <- replicate(10, system.time({s <<- x[order(x[["ints"]]), ]}))
+```
+
+## DuckDB
+
+The next example uses the elegant native interface between R and DuckDB, and
+set the number of threads here in an environment variable.
+
+The performance results section below however seems to indicate that,
+apparently, DuckDB is ignoring this environment variable and running on one
+thread? Perhaps this is a bug?  I think the results reflect a single-thread
+DuckDB radix sort. For comparison, single-threaded results for everything are
+also shown at the end.
+
+```{r, echo=TRUE, eval=FALSE}
+Sys.setenv(DUCKDB_NO_THREADS=NTHREADS)
+
+library(duckdb)
+con <- dbConnect(duckdb())
+duckdb_register(con, "x", x)
+t_duck <- replicate(10, system.time({s_duck <<- dbGetQuery(con, "SELECT * FROM x ORDER BY ints")}))
+```
+
+## Data.table
+
+The example uses the data.table `setDTthreads` function to explicitly set the number of
+threads to use.
+
+```{r, echo=TRUE, eval=FALSE}
+library(data.table)
+setDTthreads(NTHREADS)
+t_dt <- replicate(10, system.time({s_dt <<- data.table(x, key="ints")}))
+```
+
+## Dplyr
+
+Dplyr `arrange` I think simply uses the base R sorting algorithms.
+
+```{r, echo=TRUE, eval=FALSE}
+library(dplyr)
+t_dpl <- replicate(10, system.time({s_dpl <<- x %>% arrange(ints)}))
+```
+
+## Performance and comments
+
+Performance results on my 8-core Ryzen laptop are collected below.
+Two plots are shown, one for `NTHREADS = 1` and for
+`NTHREADS = 8`, which really only affect the data.table results.
+
+- The base R and dplyr sort are always single threaded.
+- I'm pretty sure DuckDB is only running single-threaded here, too.
+- Despite dplyr using base R under the hood it is somehow slightly faster.
+- Despite base R using an algorithm based on the data.table one, it's faster than data.table in this example.
+
+```{r, echo=TRUE, eval=FALSE}
+# -----------------------------------------------------------------------------------------------
+timings <- rbind(data.frame(approach = "DuckDB", elapsed = t_duck[3, ]),
+                 data.frame(approach = "base R", elapsed = t_base[3, ]),
+                 data.frame(approach = "dplyr", elapsed = t_dpl[3, ]),
+                 data.frame(approach = "data.table", elapsed = t_dt[3, ]))
+jpeg(file="sort_upshot.jpg", quality=100, width=1000)
+boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
+m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
+text(seq(NROW(m)), y = 6, labels = sprintf("%.2f", m$mean), cex = 1.5)
+dev.off()
+```
+
+<br/>
+<div style='text-align: center; font-weight: 555;'>
+NTHREADS = 1
+<img src="sort_upshot1.jpg"> </img>
+<hr/>
+NTHREADS = 8
+<img src="sort_upshot8.jpg"> </img>
+</div>
+
+
+# Note: Radix sorting on non-numeric values
+
+Radix sorts are usually one of the fastest ways to sort most data types. But
+their universal application can sometimes yield unexpected results, especially
+for UTF8 character data. Consider the following simple example:
+
+## Base R
+
+```{r, eval=TRUE, echo=FALSE}
+library <- function(...) suppressPackageStartupMessages(base::library(...))
+```
+
+```{r, echo=TRUE, message = FALSE, warnings = FALSE}
+x <- data.frame(a=strsplit("taW", "")[[1]])
+x[order(x$a),,drop = FALSE]
+```
+
+## DuckDB
+
+```{r, echo=TRUE}
+library(duckdb)
+con <- dbConnect(duckdb())
+duckdb_register(con, "x", x)
+dbGetQuery(con, "SELECT * FROM x ORDER BY a")
+```
+
+
+## Data.table
+
+```{r, echo=TRUE}
+library(data.table)
+data.table(x, key = "a")
+```
+
+## Base R with radix sort explicitly set
+
+```{r, echo = TRUE}
+x[order(x$a, method="radix"),,drop = FALSE]
+```
+
+So what's going on here? The default radix sort used by DuckDB and data.table
+are effectively sorting character values as ASCII (in the C locale), instead of
+in the UTF8 collation locale in use by R, which in this case is `en_US.UTF-8`.
+
+Base R defaults to using a shell sort algorithm for characters for this reason.
+
+I'm not sure this is a very big deal, but it is something to be aware of.
+
+<br/><br/>
