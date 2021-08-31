@@ -404,6 +404,9 @@ t_dpl &lt;- replicate(10, system.time({s_dpl &lt;&lt;- x %&gt;% arrange(ints)}))
 <li>Despite dplyr using base R under the hood it is somehow slightly faster.</li>
 <li>Despite base R using an algorithm based on the data.table one, it’s faster than data.table in this example.</li>
 </ul>
+<p>Of course this is a very small problem that easily fits in memory. 100 million integers is only about 400MB or so. My cheap laptop has 8GB of memory. In-memory analyses represent a sweet spot for languages like R, and it is probably difficult to exceed R’s performance in such cases.</p>
+<p>On the other hand, if we need to sort 40 GB of data, well then that’s a very different story. It’s possible to work out problems like that in R, it’s even possible to do it efficiently, but it’s usually quite a bit more complicated and often a real hassle.</p>
+<p>Systems like DuckDB, on the other hand, “just work” on such large problems with really no significant changes. That can be a real advantage!</p>
 <pre class="r"><code># -----------------------------------------------------------------------------------------------
 timings &lt;- rbind(data.frame(approach = &quot;DuckDB&quot;, elapsed = t_duck[3, ]),
                  data.frame(approach = &quot;base R&quot;, elapsed = t_base[3, ]),
