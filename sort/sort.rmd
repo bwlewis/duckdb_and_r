@@ -177,3 +177,11 @@ Base R defaults to using a shell sort algorithm for characters for this reason.
 I'm not sure this is a very big deal, but it is something to be aware of.
 
 <br/><br/>
+
+# Session
+
+```{r, echo=TRUE}
+sessionInfo()
+cat(paste(system("free", intern=TRUE), collapse="\n"))
+cat(paste(system("cat /proc/cpuinfo", intern=TRUE), collapse="\n"))
+```

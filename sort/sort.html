@@ -470,6 +470,266 @@ data.table(x, key = &quot;a&quot;)</code></pre>
 <p><br /><br /></p>
 </div>
 </div>
+<div id="session" class="section level1">
+<h1>Session</h1>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.0 (2021-05-18)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Devuan GNU/Linux 3 (beowulf)
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+## LAPACK: /usr/local/lib/R/lib/libRlapack.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] data.table_1.14.0 duckdb_0.2.9      DBI_1.1.1        
+## 
+## loaded via a namespace (and not attached):
+##  [1] digest_0.6.27     R6_2.5.0          jsonlite_1.7.2    magrittr_2.0.1   
+##  [5] evaluate_0.14     rlang_0.4.11      stringi_1.6.2     jquerylib_0.1.4  
+##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.0       stringr_1.4.0    
+## [13] xfun_0.24         compiler_4.1.0    htmltools_0.5.1.1 knitr_1.33       
+## [17] sass_0.4.0</code></pre>
+<pre class="r"><code>cat(paste(system(&quot;free&quot;, intern=TRUE), collapse=&quot;\n&quot;))</code></pre>
+<pre><code>##               total        used        free      shared  buff/cache   available
+## Mem:        7567868     1427740     3990996       17516     2149132     5834956
+## Swap:       5242876        2560     5240316</code></pre>
+<pre class="r"><code>cat(paste(system(&quot;cat /proc/cpuinfo&quot;, intern=TRUE), collapse=&quot;\n&quot;))</code></pre>
+<pre><code>## processor    : 0
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1392.311
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 0
+## cpu cores    : 8
+## apicid       : 0
+## initial apicid   : 0
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 1
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1405.369
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 1
+## cpu cores    : 8
+## apicid       : 1
+## initial apicid   : 1
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 2
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1297.853
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 2
+## cpu cores    : 8
+## apicid       : 2
+## initial apicid   : 2
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 3
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1384.509
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 3
+## cpu cores    : 8
+## apicid       : 3
+## initial apicid   : 3
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 4
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1397.284
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 4
+## cpu cores    : 8
+## apicid       : 4
+## initial apicid   : 4
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 5
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1397.136
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 5
+## cpu cores    : 8
+## apicid       : 5
+## initial apicid   : 5
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 6
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1397.299
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 6
+## cpu cores    : 8
+## apicid       : 6
+## initial apicid   : 6
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+## 
+## processor    : 7
+## vendor_id    : AuthenticAMD
+## cpu family   : 23
+## model        : 96
+## model name   : AMD Ryzen 7 4700U with Radeon Graphics
+## stepping : 1
+## microcode    : 0x8600102
+## cpu MHz      : 1397.211
+## cache size   : 512 KB
+## physical id  : 0
+## siblings : 8
+## core id      : 7
+## cpu cores    : 8
+## apicid       : 7
+## initial apicid   : 7
+## fpu      : yes
+## fpu_exception    : yes
+## cpuid level  : 16
+## wp       : yes
+## flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate sme ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
+## bugs     : sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass
+## bogomips : 3992.45
+## TLB size : 3072 4K pages
+## clflush size : 64
+## cache_alignment  : 64
+## address sizes    : 44 bits physical, 48 bits virtual
+## power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]</code></pre>
+</div>
 
 
 
