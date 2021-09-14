@@ -9,6 +9,8 @@ a much more comprehensive discussion on difficulties with SQL, see these really
 interesting notes by Jamie Brandon:
 https://scattered-thoughts.net/writing/against-sql/.
 
+These notes present several interesting, if somewhat eclectic, data-sciency examples. For more comprehensive and straight-up database-style performance comparisons, see the excellent work by H20 here:  https://h2oai.github.io/db-benchmark/ (where both R's data.table and DuckDB perform very well in general).
+
 * [Slides](https://bwlewis.github.io/duckdb_and_r/talk/talk.html)
 
 Main overview:
