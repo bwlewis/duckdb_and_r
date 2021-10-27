@@ -4,12 +4,15 @@ R packages discussed in these notes include duckdb (of course), dplyr,
 data.table, fst, xts, RSQLite, and vroom and a little Python Pandas by way of
 reticulate.
 
-The notes exhibit something of a disdain for SQL. For
-a much more comprehensive discussion on difficulties with SQL, see these really
-interesting notes by Jamie Brandon:
-https://scattered-thoughts.net/writing/against-sql/.
+The notes exhibit a mild disdain for SQL. For a much more comprehensive
+discussion on difficulties with SQL, see these really interesting notes by
+Jamie Brandon: https://scattered-thoughts.net/writing/against-sql/.
+As an alternative to SQL I generally prefer dplyr.
 
 These notes present several interesting, if somewhat eclectic, data-sciency examples. For more comprehensive and straight-up database-style performance comparisons, see the excellent work by H20 here:  https://h2oai.github.io/db-benchmark/ (where both R's data.table and DuckDB perform very well in general).
+
+Also, you should check out <a href="https://github.com/pola-rs/polars">https://github.com/pola-rs/polars</a> for a remarkably high-performance new data frame implementation in Rust and geared to Python right now. This is the first data frame-like environment I have seen that really gives R's data.table competition, aside from KDB+ of course.
+
 
 * [Slides](https://bwlewis.github.io/duckdb_and_r/talk/talk.html)
 
