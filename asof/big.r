@@ -105,12 +105,25 @@ t.duck <- replicate(6, system.time({
   ans.duck <<- dbGetQuery(con, Q)
 }))
 
+Q2 <- "
+SELECT calendar.date as cal_date_col, arg_max(data.value, data.date) as latest_value
+FROM calendar
+LEFT JOIN data
+ON calendar.date >= data.date
+GROUP BY calendar.date"
+
+print("Duck2")
+t.duck2 <- replicate(6, system.time({
+  ans.duck2 <<- dbGetQuery(con, Q2)
+}))
+
+print("RSQLite")
 library(RSQLite)
 lite <- dbConnect(RSQLite::SQLite(), ":memory:")
 dbWriteTable(lite, "calendar", calendar)
 dbWriteTable(lite, "data", data)
 t.lite <- replicate(6, system.time({
-  ans.duck <<- dbGetQuery(lite, Q)
+  ans.lite <<- dbGetQuery(lite, Q)
 }))
 
 timings <- rbind(data.frame(approach = "zoo", elapsed = t.zoo[3, ]),
@@ -119,6 +132,7 @@ timings <- rbind(data.frame(approach = "zoo", elapsed = t.zoo[3, ]),
                  data.frame(approach = "Pandas (R)", elapsed = t.py[3, ]),
                  data.frame(approach = "Pandas (Native)", elapsed = t.nativepy),
                  data.frame(approach = "SQL/Duck DB", elapsed = t.duck[3, ]),
+                 data.frame(approach = "SQL/Duck DB v2", elapsed = t.duck2[3, ]),
                  data.frame(approach = "SQLite", elapsed = t.lite[3, ]))
 jpeg(file="asof_upshot.jpg", quality=100, width=1000)
 boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
