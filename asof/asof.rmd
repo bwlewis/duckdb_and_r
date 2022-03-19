@@ -5,6 +5,9 @@ This piece describes a kind of table join common in time series problems
 It proceeds in two parts: first, a very simple example and some solutions
 to illustrate key ideas; then a larger example to illustrate performance.
 
+I've updated this post on March 2022 to include results from Polars
+and the latest versions of DuckDB (which continues to improve significantly).
+
 ## Part 1: The basic idea
 
 Given a table of desired dates, or times, or indeed any ordered values (call
@@ -70,17 +73,17 @@ series-specific databases usually handle this kind of thing pretty easily--for
 instance, the commercial Kdb+ database handles such joins with simple, concise
 syntax and extreme performance.
 
-R and Python are also really good for time series problems and also exhibit
-several ways to carry out "as of" style joins (with varying levels of
-performance).
+R and Python, and now Rust (Polars), are very good for time series problems and
+also exhibit several ways to carry out "as of" style joins (with varying levels
+of performance).
 
 ANSI SQL is probably not the best way to express solutions to the "as of" join
 problem (as we shall see), but it can be done. However, many SQL databases
 include idiosyncratic approaches to more efficiently deal with this. Every SQL
 approach I have seen tends to be (to me, at least) over-complicated (and slow).
 
-If you don't feel like reading any more, the quick take away is, use R xts,
-data.table, Python Pandas, or Kdb+ for this kind of problem if you need
+If you don't feel like reading any more, the quick take away is, use Polars,
+Python Pandas, R xts, data.table, or Kdb+ for this kind of problem if you need
 performance.
 
 ### Some R approaches
@@ -192,52 +195,13 @@ SELECT * FROM d UNION SELECT * FROM d
 "
 (ans.duck <- dbGetQuery(con, Q))
 ```
-The generic SQL approach is so unspeakably horrible that, until DuckDB
-implements a special function just for this scenario, don't try this at home.
+The generic SQL approach syntax is horrible.
 I guess that's part of the point of all of these examples, sometimes SQL
 is just not the right tool for the job.
 
 Of course, I am far from an expert--if you can find a better way to formulate a
 solution to this problem in **plain vanilla** SQL let me know (send a pull request or
 whatever)!
-
-
-## Brief interlude (skip ahead if bored)
-
-The examples here show a join between a (usually smaller, regular)
-single-column "calendar" table of desired dates/times/otherwise ordered things
-and another (usually much larger, irregular) *two*-column "data" table of
-dates/times/ordered things and corresponding values.
-
-It's easy to imagine extending that scenario to cover more than two columns in
-the "data" table--to a table with an arbitrary number of columns and an
-arbitrary number of missing values within. In other words, a kind of "sparse"
-table.  Indeed, all of the R and Python approaches to the "as of" join handle
-this case. My hand-rolled SQL approach does not, but could be extended to (with
-some annoying syntactical difficulty).
-
-But, sparse data.frames still encode (store) missing values in all of these
-approaches. That means that, if the data are huge and the calendar table is,
-relatively speaking, small, then it could be much more memory efficient to
-compute the joins column-by-column, and then join all those small results
-together.
-
-That approach for handling many "data" columns nicely fits into a map/reduce
-paradigm (which means it can easily be run in parallel so long as the
-"calendar" table is small enough to distribute).  It's advantage is
-scalability. A disadvantage is complexity.
-
-Changing the data model presents another way however: store the huge "data"
-table full of missing values as a sparse matrix. Then the huge matrix can
-be efficiently stored and operated on as a whole.
-
-Such a data model and approach is available in several systems, including at
-least Microsoft SQL server, SciDB, TileDB (and *many* others).
-(Imagine if zoo's 'na.locf' function worked on the R Matrix-package sparse
-matrices). The advantage of this approach is conceptual and practical
-simplicity. A possible disadvantage is lack of easy scalability, depending on
-the implementation.
-
 
 
 ## Part 2: Performance
@@ -274,25 +238,40 @@ example is too small to really put those efficient R packages through their
 paces.  Despite a conceptually identical approach to xts, the zoo way is quite
 a bit slower.
 
-And despite similarity to data.table's approach, Pandas is slower than expected
-here when run through R's reticulate package directly on R data.frame
-objects--indicated here by the "Pandas(R)" label.
-
-Now, I know better that Pandas should be exceptionally well-tuned for this kind
-of problem, so the exhibited slowness must be due to reticulate. My guess is
-repeated data copy/conversions on between R and Python in each iteration.
-
-To give Pandas a fair shake, another approach saves the data as CSV files and
-runs an independent Python program natively on Pandas data frames, indicated by
-the "Python(Native)" label. As expected, Pandas' excellent performance here is
-indistinguishable from xts.
+Pandas and, especially, Polars are faster yet.
 
 I'm not surprised that the SQL solutions ran slowly, if for no other reason
-than the offensive query I wrote. I was surprised that, given the awful query,
-SQLite handily out-performed DuckDB. However, I did not include the data
-transfer time between R and SQLite in the comparison (which adds only a small
-overhead for this relatively small problem).
+than the offensive query I wrote.
 
+
+## A bigger problem
+
+R's xts and data.table and Python Pandas and Polars are much faster than the
+other approaches. So much so that this problem is probably too small to test
+them well (set up overhead time is a large part of overall run time).
+
+We re-ran a larger problem simply by scaling up `N <- 1e8` above on the
+following large system for comparison: one Amazon AWS Hpc6a.48xlarge instace
+with 96 physical AMD  EPYC 7003 CPU cores and 384 GiB system RAM.  The tested
+version of R was 4.1.3, Python 3.9.2, xts version 0.12.1, data.table 1.14.2,
+Pandas 1.1.5 and Polars 0.13.12 (via the Python interface).
+
+```{r, eval=TRUE, echo=FALSE, fig.width=12}
+load("bigger.rdata")
+timings <- rbind(data.frame(approach = "xts", elapsed = t.xts[3, ]),
+                 data.frame(approach = "data.table", elapsed = t.dt[3, ]),
+                 data.frame(approach = "Pandas (R)", elapsed = t.py[3, ]),
+                 data.frame(approach = "Polars", elapsed = t.polars)
+)
+boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
+m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
+text(seq(NROW(m)), y = 5, labels = sprintf("%.2f", m$mean), cex = 1.5)
+```
+The Python packages  exhibit very high performance, in particular Polars.
+
+
+
+## Details
 
 Basic details for each approach are summarized below.
 
@@ -333,42 +312,23 @@ t.dt <- replicate(10, system.time({
 }))
 ```
 
-### Python Pandas using R data.frames via reticulate
+### Python Pandas
 
 Because this example already uses POSIXct date/times, we don't need to convert
 as in the simple example in Part 1. Otherwise identical.
 
 ```{r, eval = FALSE}
 library(reticulate)
-pandas <- import("pandas")
+pandas <- import("pandas", convert = FALSE)
+calendar_py <- r_to_py(calendar)
+data_py <- r_to_py(data)
+ans.py <- pandas$merge_asof(calendar_py, data_py, on = "date")
 t.py <- replicate(10, system.time({
-  ans.py <<- pandas$merge_asof(calendar, data, on = "date")
+  invisible(pandas$merge_asof(calendar_py, data_py, on = "date"))
 }))
+ans.py <- py_to_r(ans.py)
 ```
 
-### Native Python Pandas
-
-```{r, eval = FALSE}
-library(reticulate)
-program <- '
-import pandas as p
-import numpy as np
-import time
-
-calendar = p.read_csv("calendar.csv")
-calendar["date"] = p.to_datetime(calendar["date"])
-data = p.read_csv("data.csv")
-data["date"] = p.to_datetime(data["date"])
-
-def run(i):
-  tic = time.perf_counter()
-  ans = p.merge_asof(calendar, data, on = "date")
-  return time.perf_counter() - tic
-
-ans = list(map(run, np.arange(1, 11)))
-'
-t.nativepy <- py_to_r(py_run_string(program))[["ans"]]
-```
 
 ### DuckDB
 
@@ -410,18 +370,54 @@ Oddly, the SQLite "date" column is returned to R as a numeric value--in fact
 unclassed POSIXct values. But otherwise the result is correct.
 
 
+### Polars
+
+Polars is a fast data frame library written in Rust. It also has a comprehensive
+Python wrapper. Data type compatibility with Python Pandas still has a few rough
+edges however, requiring some Python gymnastics below:
+
+```{r, eval=FALSE}
+# The following does not work, it mis-coverts the Pandas datetime[ns] values
+# to datetime[ms]: (see https://github.com/pola-rs/polars/issues/476)
+
+p <- import("polars", convert = FALSE)
+calendar_plr <- p$convert$from_pandas(calendar_py)
+data_plr <- p$convert$from_pandas(data_py)
+
+# (date time conversion should not be this hard!)
+# Instead we convert dates to int64 and back in polars:
+
+program <- '
+import numpy as np
+import time
+import polars as p
+r.calendar_py["date"] = r.calendar_py["date"].astype(int)
+r.data_py["date"] = r.data_py["date"].astype(int)
+calendar_plr = p.convert.from_pandas(r.calendar_py)
+data_plr = p.convert.from_pandas(r.data_py)
+calendar_plr["date"] = calendar_plr["date"].cast(p.Datetime).dt.and_time_unit("ns")
+data_plr["date"] = data_plr["date"].cast(p.Datetime).dt.and_time_unit("ns")
+
+ans_plr = calendar_plr.join_asof(data_plr, on="date")
+
+def run(i):
+  tic = time.perf_counter()
+  ans = ans_plr = calendar_plr.join_asof(data_plr, on="date")
+  return time.perf_counter() - tic
+
+ans = list(map(run, np.arange(1, 11)))
+'
+t.polars <- py_to_r(py_run_string(program))$ans
+```
+
+
 
 ## Misc. references
 
+- [Polars](https://github.com/pola-rs/polars)
 - [DuckDB](https://duckdb.org/)
 - [R xts](http://joshuaulrich.github.io/xts/)
 - [R data.table](https://github.com/Rdatatable/data.table)
 - [R zoo](https://zoo.r-forge.r-project.org/)
 - [Pandas](https://pandas.pydata.org/)
-
-Alternative data models...
-
-- [Microsoft SQLServer sparse columns](https://docs.microsoft.com/en-us/sql/relational-databases/tables/use-sparse-columns?view=sql-server-ver15)
-- [SciDB](https://www.paradigm4.com)
-- [TileDB](https://tiledb.com/)
 

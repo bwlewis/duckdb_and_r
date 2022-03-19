@@ -30,36 +30,16 @@ t.dt <- replicate(10, system.time({
   ans.dt <<- data.dt[calendar, on = "date", roll = TRUE]
 }))
 
-# Python/Pandas using R objects
+# Python/Pandas 
 library(reticulate)
-pandas <- import("pandas")
+pandas <- import("pandas", convert = FALSE)
+calendar_py <- r_to_py(calendar)
+data_py <- r_to_py(data)
+ans.py <- pandas$merge_asof(calendar_py, data_py, on = "date")
 t.py <- replicate(10, system.time({
-  ans.py <<- pandas$merge_asof(calendar, data, on = "date")
+  invisible(pandas$merge_asof(calendar_py, data_py, on = "date"))
 }))
-ans.py
-
-# Native Python/Pandas
-write.csv(calendar, file  ="calendar.csv", row.names = FALSE)
-write.csv(data, file  ="data.csv", row.names = FALSE)
-library(reticulate)
-program <- '
-import pandas as p
-import numpy as np
-import time
-
-calendar = p.read_csv("calendar.csv")
-calendar["date"] = p.to_datetime(calendar["date"])
-data = p.read_csv("data.csv")
-data["date"] = p.to_datetime(data["date"])
-
-def run(i):
-  tic = time.perf_counter()
-  ans = p.merge_asof(calendar, data, on = "date")
-  return time.perf_counter() - tic
-
-ans = list(map(run, np.arange(1, 11)))
-'
-t.nativepy <- py_to_r(py_run_string(program))$ans
+ans.py <- py_to_r(ans.py)
 
 
 library(duckdb)
@@ -105,17 +85,6 @@ t.duck <- replicate(6, system.time({
   ans.duck <<- dbGetQuery(con, Q)
 }))
 
-Q2 <- "
-SELECT calendar.date as cal_date_col, arg_max(data.value, data.date) as latest_value
-FROM calendar
-LEFT JOIN data
-ON calendar.date >= data.date
-GROUP BY calendar.date"
-
-print("Duck2")
-t.duck2 <- replicate(6, system.time({
-  ans.duck2 <<- dbGetQuery(con, Q2)
-}))
 
 print("RSQLite")
 library(RSQLite)
@@ -126,17 +95,51 @@ t.lite <- replicate(6, system.time({
   ans.lite <<- dbGetQuery(lite, Q)
 }))
 
+
+# Polars
+# The following does not work, it mis-coverts the Pandas datetime[ns] values
+# to datetime[ms]: (see https://github.com/pola-rs/polars/issues/476)
+# p <- import("polars", convert = FALSE)
+# calendar_plr <- p$convert$from_pandas(calendar_py)
+# data_plr <- p$convert$from_pandas(data_py)
+#
+# (date time conversion should not be this hard)
+#
+# Instead we convert dates to int64 and back in polars:
+program <- '
+import numpy as np
+import time
+import polars as p
+r.calendar_py["date"] = r.calendar_py["date"].astype(int)
+r.data_py["date"] = r.data_py["date"].astype(int)
+calendar_plr = p.convert.from_pandas(r.calendar_py)
+data_plr = p.convert.from_pandas(r.data_py)
+calendar_plr["date"] = calendar_plr["date"].cast(p.Datetime).dt.and_time_unit("ns")
+data_plr["date"] = data_plr["date"].cast(p.Datetime).dt.and_time_unit("ns")
+
+ans_plr = calendar_plr.join_asof(data_plr, on="date")
+
+def run(i):
+  tic = time.perf_counter()
+  ans = ans_plr = calendar_plr.join_asof(data_plr, on="date")
+  return time.perf_counter() - tic
+
+ans = list(map(run, np.arange(1, 11)))
+'
+t.polars <- py_to_r(py_run_string(program))$ans
+
+
 timings <- rbind(data.frame(approach = "zoo", elapsed = t.zoo[3, ]),
                  data.frame(approach = "xts", elapsed = t.xts[3, ]),
                  data.frame(approach = "data.table", elapsed = t.dt[3, ]),
                  data.frame(approach = "Pandas (R)", elapsed = t.py[3, ]),
-                 data.frame(approach = "Pandas (Native)", elapsed = t.nativepy),
                  data.frame(approach = "SQL/Duck DB", elapsed = t.duck[3, ]),
-                 data.frame(approach = "SQL/Duck DB v2", elapsed = t.duck2[3, ]),
-                 data.frame(approach = "SQLite", elapsed = t.lite[3, ]))
+                 data.frame(approach = "SQLite", elapsed = t.lite[3, ]),
+                 data.frame(approach = "Polars", elapsed = t.polars)
+)
 jpeg(file="asof_upshot.jpg", quality=100, width=1000)
 boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean values shown below")
 m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
-text(seq(NROW(m)), y = 40, labels = sprintf("%.2f", m$mean), cex = 1.5)
+text(seq(NROW(m)), y = 5, labels = sprintf("%.2f", m$mean), cex = 1.5)
 dev.off()
 
