@@ -233,10 +233,9 @@ with brief comments below. But first, the performance timing results:
 
 <img src="asof_upshot.jpg"></img>
 
-Xts and data.table are, as expected, super-fast, with xts prevailing here. This
-example is too small to really put those efficient R packages through their
-paces.  Despite a conceptually identical approach to xts, the zoo way is quite
-a bit slower.
+Xts and data.table are, as expected, very fast. This example is too small to
+really put those efficient R packages through their paces.  Despite a
+conceptually identical approach to xts, the zoo way is quite a bit slower.
 
 Pandas and, especially, Polars are faster yet.
 
@@ -250,11 +249,14 @@ R's xts and data.table and Python Pandas and Polars are much faster than the
 other approaches. So much so that this problem is probably too small to test
 them well (set up overhead time is a large part of overall run time).
 
-We re-ran a larger problem simply by scaling up `N <- 1e8` above on the
-following large system for comparison: one Amazon AWS Hpc6a.48xlarge instace
-with 96 physical AMD  EPYC 7003 CPU cores and 384 GiB system RAM.  The tested
-version of R was 4.1.3, Python 3.9.2, xts version 0.12.1, data.table 1.14.2,
-Pandas 1.1.5 and Polars 0.13.12 (via the Python interface).
+We re-ran a larger problem simply by scaling up `N <- 5e8` above.  That's
+two orders of magnitude larger than in the above tests.
+
+This problem exceeds the paltry 8 GB memory on my cheap laptop, so I ran on the
+following large system: one Amazon AWS Hpc6a.48xlarge instace with 96 physical
+AMD  EPYC 7003 CPU cores and 384 GiB system RAM.  The tested version of R was
+4.1.3, Python 3.9.2, xts version 0.12.1, data.table 1.14.2, Pandas 1.1.5 and
+Polars 0.13.12 (via the Python interface).
 
 ```{r, eval=TRUE, echo=FALSE, fig.width=12}
 load("bigger.rdata")
@@ -267,7 +269,10 @@ boxplot(elapsed ~ approach, data = timings, main = "Elapsed time (seconds), mean
 m = aggregate(list(mean=timings$elapsed), by=list(timings$approach), FUN=mean)
 text(seq(NROW(m)), y = 5, labels = sprintf("%.2f", m$mean), cex = 1.5)
 ```
-The Python packages  exhibit very high performance, in particular Polars.
+The Python packages  exhibit very high performance, in particular Polars.  Note
+that all of the illustrated R and Python approaches compute this as-of join
+faster than either SQL DB approach took to complete a problem two orders of
+magnitude smaller.
 
 
 
