@@ -356,8 +356,10 @@ blog post on range/inequality joins
 thread-level parallelism for performance to solve such problems.  And indeed I
 observed while the DuckDB CLI queries were running (not, notably, in the R
 package version) that all eight cores were very active.  Note however that the
-IRanges code is single-threaded and only uses one CPU core yet achieves about
-10x performance beyond the DuckDB implementation in this example. No doubt
-there are counter-examples to this observation in other problems, but at least
-for this real-world genomics use-case, IRanges is the most efficient method for
-solving the problem.
+IRanges code is single-threaded and only uses one CPU core (above, combined
+with R's process-level parallelism for one thread per chromosome or 2 total
+threads).  Despite using 4x fewer threads, IRanges achieves about 10x
+performance of the DuckDB implementation in this example. No doubt there are
+counter-examples to this observation in other problems, but at least for this
+real-world genomics use-case, IRanges is the most efficient method for solving
+the problem.
