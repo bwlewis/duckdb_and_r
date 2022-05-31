@@ -32,12 +32,19 @@ reliably download the raw data files.
 
 # The example
 
-
 Finding overlapping regions between two sets of coordinate values is a common
 problem in computational genomics and other disciplines.  At least two R
 packages can very rapidly perform this computation: the IRanges package by
 Pages, Aboyoun and Lawrence in the bioconductor[^1] and the widely popular
 data.table package by Dowle, Short, Lianoglou, Srinivasan, and others[^2].
+In the database world, this kind of operation falls into the field of
+range/inequality joins.
+
+This example was motivated by real-world genomics analysis workflows.  I wrote
+the SQL implementation below to follow the original R implementations as
+closely as I could--note that they are not explicit inequality joins as they
+include an equality condition too. Such is the nature of real world problems.
+
 
 [^1]: Gentleman R.C., Carey V.J., Bates D.M., Bolstad B., Dettling M., Dudoit S., Ellis B., Gautier L., Ge Y., Gentry J., Hornik K., Hothorn T., Huber W., Iacus S., Irizarry R., Leisch F., Li C., Maechler M., Rossini A.J., Sawitzki  ., Smith C., Smyth G., Tierney L., Yang J.Y. and Zhang J. (2004) Bioconductor: open software development for computational biology and bioinformatics. Genome Biol. 5(10): R80.
 
@@ -298,7 +305,7 @@ cat << EOF | ${DUCK} -csv | tail -n 1
 CREATE TABLE variants AS SELECT * FROM 'variants.csv';
 CREATE TABLE genes AS SELECT * FROM 'genes.csv';
 CREATE TABLE t0 AS SELECT CURRENT_TIMESTAMP;
-CREATE TABLE result AS SELECT G.gene, COUNT(V.ref) AS 'count'
+SELECT G.gene, COUNT(V.ref) AS 'count'
 FROM genes G JOIN variants V
 ON G.chromosome = V.chromosome
 AND (G.start <= (V.start + length(ref)) AND G.end >= V.start)
@@ -342,7 +349,7 @@ On this system at least, the DuckDB CLI version 0.3.5 is more than 10x faster
 than the (compiled from same source code) DuckDB R package version 0.3.3. There
 has been about a 2x regression in DuckDB R package version results compared to
 version 0.2.6 last winter, which clocked in at about 33 seconds back then
-(versus 68 seconds now).
+(versus about 70 seconds now).
 
 DuckDB CLI performance is roughly in the same ballpark as R; it's about 4x
 slower than data.table and 10x slower than Bioconductor IRanges for this

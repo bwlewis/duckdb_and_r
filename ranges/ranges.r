@@ -3,6 +3,7 @@ library(data.table)
 
 load("variants_genes.rdata")
 
+cat("Data table\n", file=stderr())
 library(data.table)
 overlap <- function(chromosome)
 {
@@ -18,6 +19,7 @@ t1 <- replicate(10, system.time(ans.DT <<- rbindlist(mcMap(overlap, c(7, 8)))))
 ans.DT <- ans.DT[order(ans.DT[["N"]], decreasing = TRUE), ]
 
 
+cat("IRanges\n", file=stderr())
 # IRanges
 library(IRanges)
 overlap <- function(chromosome)
@@ -36,7 +38,7 @@ ans.IR <- ans.IR[order(ans.IR[["count"]], decreasing = TRUE), ]
 
 
 ### Duck DB (R package)
-
+cat("DuckDB R\n", file=stderr())
 library(duckdb)
 con <- dbConnect(duckdb::duckdb(), dbdir=":memory:", read_only=FALSE)
 
@@ -47,7 +49,8 @@ variants = rbindlist(variants)
 duckdb_register(con, "genes", genes)
 duckdb_register(con, "variants", variants)
 
-Q <- 'SELECT G.gene, COUNT(V.ref) AS "count"
+Q <- 'PRAGMA threads=8;
+SELECT G.gene, COUNT(V.ref) AS "count"
 FROM genes G JOIN variants V
 ON G.chromosome = V.chromosome
 AND (G.start <= (V.start + length(ref)) AND G.end >= V.start)
@@ -57,7 +60,7 @@ t3 <- replicate(10, system.time({ans.DB <<- dbGetQuery(con, Q)}))
 
 
 ### DuckDB (CLI)
-
+cat("DuckDB CLI\n", file=stderr())
 # The following example assumes that a current `duckdb` command-line program
 # is available in the current directory. See the cli.sh script for details.
 # First we export variants and genes as CSV files for DuckDB.

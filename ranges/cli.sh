@@ -6,7 +6,7 @@ cat << EOF | ${DUCK} -csv | tail -n 1
 CREATE TABLE variants AS SELECT * FROM 'variants.csv';
 CREATE TABLE genes AS SELECT * FROM 'genes.csv';
 CREATE TABLE t0 AS SELECT CURRENT_TIMESTAMP;
-CREATE TABLE result AS SELECT G.gene, COUNT(V.ref) AS 'count'
+SELECT G.gene, COUNT(V.ref) AS 'count'
 FROM genes G JOIN variants V
 ON G.chromosome = V.chromosome
 AND (G.start <= (V.start + length(ref)) AND G.end >= V.start)
